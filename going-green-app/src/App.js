@@ -1,25 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+// App.js
+import React, { useState } from 'react';
+import SignInPage from './SignInPage';
 
-function App() {
+const App = () => {
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  // Simulate signing in
+  const signIn = () => {
+    setIsSignedIn(true);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {!isSignedIn ? (
+        <SignInPage />
+      ) : (
+        <div>
+          <h1>Welcome back!</h1>
+          <button onClick={() => setIsSignedIn(false)}>Sign Out</button>
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default App;
