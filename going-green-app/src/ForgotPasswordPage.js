@@ -1,4 +1,4 @@
-// SignInPage.js
+// ForgotPasswordPage.js
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
@@ -60,25 +60,21 @@ const Text = styled.p`
   color: ${(props) => props.theme.colors.text};
 `;
 
-const SignInPage = () => {
+const ForgotPasswordPage = () => {
   return (
     <Container>
       <FormWrapper>
-        <FormTitle>Sign In</FormTitle>
+        <FormTitle>Forgot Password</FormTitle>
         <Form>
-          <Input type="email" placeholder="Email" />
-          <Input type="password" placeholder="Password" />
-          <Button type="submit">Sign In</Button>
+          <Input type="email" placeholder="Enter your email" />
+          <Button type="submit">Reset Password</Button>
         </Form>
         <Text>
-          <Link to="/forgot-password">Forgot Password?</Link> {/* Add link to Forgot Password page */}
-        </Text>
-        <Text>
-          Don't have an account? <Link to="/signup">Sign Up</Link>
+          Remembered your password? <Link to="/signin">Sign In</Link>
         </Text>
       </FormWrapper>
     </Container>
   );
 };
 
-export default SignInPage;
+export default ForgotPasswordPage;
