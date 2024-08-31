@@ -1,16 +1,15 @@
 // theme.js
-import { createTheme } from '@mui/material/styles';
-
-export const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#0070f3',
+export const theme = {
+    colors: {
+      primary: '#0070f3',
+      background: '#f0f4f8',
+      text: '#333',
+      button: '#0070f3',
     },
-    background: {
-      default: '#f0f0f0',
+    fontSizes: {
+      small: '0.8rem',
+      medium: '1rem',
+      large: '1.5rem',
     },
-    text: {
-      primary: '#333',
-    },
-  },
-});
+  };
+  

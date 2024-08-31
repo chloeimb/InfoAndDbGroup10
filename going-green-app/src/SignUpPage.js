@@ -1,4 +1,4 @@
-// SignInPage.js
+// SignUpPage.js
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
@@ -60,22 +60,23 @@ const Text = styled.p`
   color: ${(props) => props.theme.colors.text};
 `;
 
-const SignInPage = () => {
+const SignUpPage = () => {
   return (
     <Container>
       <FormWrapper>
-        <FormTitle>Sign In</FormTitle>
+        <FormTitle>Sign Up</FormTitle>
         <Form>
+          <Input type="text" placeholder="Username" />
           <Input type="email" placeholder="Email" />
           <Input type="password" placeholder="Password" />
-          <Button type="submit">Sign In</Button>
+          <Button type="submit">Sign Up</Button>
         </Form>
         <Text>
-          Don't have an account? <Link to="/signup">Sign Up</Link>
+          Already have an account? <Link to="/signin">Sign In</Link>
         </Text>
       </FormWrapper>
     </Container>
   );
 };
 
-export default SignInPage;
+export default SignUpPage;
