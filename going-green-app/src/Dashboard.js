@@ -42,6 +42,7 @@ const FixedRibbon = styled.div`
   padding: 10px 0;
   display: flex;
   justify-content: center;
+  gap: 10px;
 `;
 
 const Button = styled(Link)`
@@ -74,6 +75,7 @@ const Dashboard = () => {
       {/* Fixed Ribbon at the Bottom */}
       <FixedRibbon>
         <Button to="/log-activity">Log Activity</Button>
+        <Button to="/faq">FAQ</Button>
       </FixedRibbon>
     </Container>
   );

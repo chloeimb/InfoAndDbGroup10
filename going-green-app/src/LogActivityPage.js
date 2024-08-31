@@ -1,6 +1,7 @@
 // LogActivityPage.js
 import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 
 const Container = styled.div`
   display: flex;
@@ -61,10 +62,14 @@ const Button = styled.button`
 `;
 
 const LogActivityPage = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
+
   const handleLogActivity = (event) => {
     event.preventDefault();
     // Handle activity logging logic here
-    alert('Activity logged!');
+    alert('Activity logged!'); // Simulate logging activity
+
+    navigate('/dashboard'); // Navigate back to the dashboard after logging the activity
   };
 
   return (

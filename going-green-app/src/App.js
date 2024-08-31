@@ -7,7 +7,8 @@ import SignUpPage from './SignUpPage';
 import ForgotPasswordPage from './ForgotPasswordPage';
 import PasswordResetPage from './PasswordResetPage';
 import Dashboard from './Dashboard';
-import LogActivityPage from './LogActivityPage'; // Import the new LogActivityPage component
+import LogActivityPage from './LogActivityPage';
+import FAQPage from './FAQPage'; // Import the FAQPage component
 import { AuthProvider, useAuth } from './AuthContext'; // Import AuthContext
 import { theme } from './theme';
 
@@ -39,6 +40,14 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <LogActivityPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/faq"
+              element={
+                <ProtectedRoute>
+                  <FAQPage />
                 </ProtectedRoute>
               }
             />
