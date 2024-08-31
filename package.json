@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^6.0.1",
     "axios": "^1.7.6",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
