@@ -1,7 +1,6 @@
 // FAQPage.js
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 const Container = styled.div`
   display: flex;
@@ -39,24 +38,6 @@ const Answer = styled.p`
   color: ${(props) => props.theme.colors.text};
 `;
 
-const BackButton = styled(Link)`
-  display: inline-block;
-  margin-top: 2rem;
-  padding: 0.8rem 1.2rem;
-  font-size: 1rem;
-  background-color: ${(props) => props.theme.colors.button};
-  color: white;
-  border: none;
-  border-radius: 5px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: ${(props) => props.theme.colors.primary};
-  }
-`;
-
 const FAQPage = () => {
   return (
     <Container>
@@ -69,9 +50,6 @@ const FAQPage = () => {
         <Question>Where can I view my logged activities?</Question>
         <Answer>Your logged activities are displayed on your Dashboard.</Answer>
         {/* Add more questions and answers as needed */}
-
-        {/* Back to Dashboard Button */}
-        <BackButton to="/dashboard">Back to Dashboard</BackButton>
       </FAQWrapper>
     </Container>
   );
