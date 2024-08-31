@@ -8,7 +8,9 @@ import ForgotPasswordPage from './ForgotPasswordPage';
 import PasswordResetPage from './PasswordResetPage';
 import Dashboard from './Dashboard';
 import LogActivityPage from './LogActivityPage';
-import FAQPage from './FAQPage'; // Import the FAQPage component
+import FAQPage from './FAQPage';
+import ArticlesPage from './ArticlesPage';
+import BottomRibbon from './BottomRibbon'; // Import the BottomRibbon component
 import { AuthProvider, useAuth } from './AuthContext'; // Import AuthContext
 import { theme } from './theme';
 
@@ -51,7 +53,16 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/articles"
+              element={
+                <ProtectedRoute>
+                  <ArticlesPage />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
+          <BottomRibbon /> {/* Add the BottomRibbon here */}
         </Router>
       </AuthProvider>
     </ThemeProvider>
