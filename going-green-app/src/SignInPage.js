@@ -1,7 +1,8 @@
 // SignInPage.js
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext'; // Import useAuth hook
 
 const Container = styled.div`
   display: flex;
@@ -61,17 +62,27 @@ const Text = styled.p`
 `;
 
 const SignInPage = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth(); // Use login function from AuthContext
+
+  const handleSignIn = (event) => {
+    event.preventDefault();
+    // Simulate authentication process
+    login(); // Log the user in
+    navigate('/dashboard'); // Redirect to the dashboard
+  };
+
   return (
     <Container>
       <FormWrapper>
         <FormTitle>Sign In</FormTitle>
-        <Form>
+        <Form onSubmit={handleSignIn}>
           <Input type="email" placeholder="Email" />
           <Input type="password" placeholder="Password" />
           <Button type="submit">Sign In</Button>
         </Form>
         <Text>
-          <Link to="/forgot-password">Forgot Password?</Link> {/* Add link to Forgot Password page */}
+          <Link to="/forgot-password">Forgot Password?</Link>
         </Text>
         <Text>
           Don't have an account? <Link to="/signup">Sign Up</Link>
