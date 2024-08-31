@@ -1,8 +1,7 @@
-// SignInPage.js
+// LogActivityPage.js
 import React from 'react';
 import styled from 'styled-components';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext'; // Import useAuth hook
+import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 
 const Container = styled.div`
   display: flex;
@@ -14,7 +13,7 @@ const Container = styled.div`
 
 const FormWrapper = styled.div`
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
   padding: 2rem;
   background-color: white;
   border-radius: 10px;
@@ -40,6 +39,13 @@ const Input = styled.input`
   border-radius: 5px;
 `;
 
+const Textarea = styled.textarea`
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+`;
+
 const Button = styled.button`
   padding: 0.8rem;
   font-size: 1rem;
@@ -55,41 +61,29 @@ const Button = styled.button`
   }
 `;
 
-const Text = styled.p`
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  color: ${(props) => props.theme.colors.text};
-`;
+const LogActivityPage = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
 
-const SignInPage = () => {
-  const navigate = useNavigate();
-  const { login } = useAuth(); // Use login function from AuthContext
-
-  const handleSignIn = (event) => {
+  const handleLogActivity = (event) => {
     event.preventDefault();
-    // Simulate authentication process
-    login(); // Log the user in
-    navigate('/dashboard'); // Redirect to the dashboard
+    // Handle activity logging logic here
+    alert('Activity logged!'); // Simulate logging activity
+
+    navigate('/dashboard'); // Navigate back to the dashboard after logging the activity
   };
 
   return (
     <Container>
       <FormWrapper>
-        <FormTitle>Sign In</FormTitle>
-        <Form onSubmit={handleSignIn}>
-          <Input type="email" placeholder="Email" />
-          <Input type="password" placeholder="Password" />
-          <Button type="submit">Sign In</Button>
+        <FormTitle>Log Activity</FormTitle>
+        <Form onSubmit={handleLogActivity}>
+          <Input type="text" placeholder="Activity Name" required />
+          <Textarea placeholder="Activity Description" rows="4" required />
+          <Button type="submit">Log Activity</Button>
         </Form>
-        <Text>
-          <Link to="/forgot-password">Forgot Password?</Link>
-        </Text>
-        <Text>
-          Don't have an account? <Link to="/signup">Sign Up</Link>
-        </Text>
       </FormWrapper>
     </Container>
   );
 };
 
-export default SignInPage;
+export default LogActivityPage;
