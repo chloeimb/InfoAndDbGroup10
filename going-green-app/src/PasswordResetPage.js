@@ -1,4 +1,4 @@
-// ForgotPasswordPage.js
+// PasswordResetPage.js
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
@@ -60,18 +60,16 @@ const Text = styled.p`
   color: ${(props) => props.theme.colors.text};
 `;
 
-const ForgotPasswordPage = () => {
+const PasswordResetPage = () => {
   return (
     <Container>
       <FormWrapper>
-        <FormTitle>Forgot Password</FormTitle>
+        <FormTitle>Reset Password</FormTitle>
         <Form>
-          <Input type="email" placeholder="Enter your email" />
-          <Button type="submit">Send Reset Link</Button>
+          <Input type="password" placeholder="New Password" />
+          <Input type="password" placeholder="Confirm New Password" />
+          <Button type="submit">Reset Password</Button>
         </Form>
-        <Text>
-          A password reset link will be sent to your email. Follow the link to reset your password.
-        </Text>
         <Text>
           Remembered your password? <Link to="/signin">Sign In</Link>
         </Text>
@@ -80,4 +78,4 @@ const ForgotPasswordPage = () => {
   );
 };
 
-export default ForgotPasswordPage;
+export default PasswordResetPage;
