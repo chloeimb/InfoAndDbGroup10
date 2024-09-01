@@ -20,53 +20,59 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
+  const { isAuthenticated } = useAuth(); // Get authentication status from context
+
   return (
     <ThemeProvider theme={theme}>
-      <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/signin" element={<SignInPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<PasswordResetPage />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/log-activity"
-              element={
-                <ProtectedRoute>
-                  <LogActivityPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/faq"
-              element={
-                <ProtectedRoute>
-                  <FAQPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/articles"
-              element={
-                <ProtectedRoute>
-                  <ArticlesPage />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-          <BottomRibbon /> {/* Add the BottomRibbon here */}
-        </Router>
-      </AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/signin" element={<SignInPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<PasswordResetPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/log-activity"
+            element={
+              <ProtectedRoute>
+                <LogActivityPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/faq"
+            element={
+              <ProtectedRoute>
+                <FAQPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/articles"
+            element={
+              <ProtectedRoute>
+                <ArticlesPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+        {isAuthenticated && <BottomRibbon />} {/* Conditionally render BottomRibbon */}
+      </Router>
     </ThemeProvider>
   );
 };
 
-export default App;
+const Root = () => (
+  <AuthProvider>
+    <App />
+  </AuthProvider>
+);
+
+export default Root;
