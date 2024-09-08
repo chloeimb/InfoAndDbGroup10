@@ -1,6 +1,7 @@
 // Dashboard.js
 import React from 'react';
 import styled from 'styled-components';
+import MyChart from './components/MyChart';  // Import your chart component
 
 const Container = styled.div`
   display: flex;
@@ -58,7 +59,6 @@ const Dashboard = () => {
           <SectionContent>
             <p>Total Carbon Footprint: 5,000 kg CO₂</p>
             <p>Average Daily Emissions: 15 kg CO₂</p>
-            {/* Add more details as needed */}
           </SectionContent>
         </Section>
 
@@ -66,8 +66,7 @@ const Dashboard = () => {
         <Section>
           <SectionTitle>Charts</SectionTitle>
           <SectionContent>
-            <p>Charts will be displayed here (e.g., bar charts, line charts).</p>
-            {/* Add chart components here */}
+            <MyChart /> {/* Add the chart component here */}
           </SectionContent>
         </Section>
 
@@ -77,7 +76,6 @@ const Dashboard = () => {
           <SectionContent>
             <p>Tip 1: Consider reducing your meat consumption to lower emissions.</p>
             <p>Tip 2: Use public transport more frequently to reduce your carbon footprint.</p>
-            {/* Add more tips dynamically based on user data */}
           </SectionContent>
         </Section>
       </DashboardWrapper>
