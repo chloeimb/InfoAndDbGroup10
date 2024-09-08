@@ -1,7 +1,6 @@
-// Dashboard.js
 import React from 'react';
 import styled from 'styled-components';
-import MyChart from './components/MyChart';  // Import your chart component
+import MyChart from './MyChart';  // Updated import path
 
 const Container = styled.div`
   display: flex;
