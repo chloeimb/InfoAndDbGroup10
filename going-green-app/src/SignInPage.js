@@ -1,95 +1,54 @@
-// SignInPage.js
-import React from 'react';
-import styled from 'styled-components';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext'; // Import useAuth hook
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: ${(props) => props.theme.colors.background};
-`;
+function Signin({ setIsAuthenticated }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // To navigate to the dashboard
 
-const FormWrapper = styled.div`
-  width: 100%;
-  max-width: 400px;
-  padding: 2rem;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  text-align: center;
-`;
+  const handleSignin = async (e) => {
+    e.preventDefault();
 
-const FormTitle = styled.h2`
-  margin-bottom: 1.5rem;
-  color: ${(props) => props.theme.colors.primary};
-`;
+    const response = await fetch('http://localhost:3000/signin', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const Input = styled.input`
-  padding: 0.8rem;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-`;
-
-const Button = styled.button`
-  padding: 0.8rem;
-  font-size: 1rem;
-  background-color: ${(props) => props.theme.colors.button};
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: ${(props) => props.theme.colors.primary};
-  }
-`;
-
-const Text = styled.p`
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  color: ${(props) => props.theme.colors.text};
-`;
-
-const SignInPage = () => {
-  const navigate = useNavigate();
-  const { login } = useAuth(); // Use login function from AuthContext
-
-  const handleSignIn = (event) => {
-    event.preventDefault();
-    // Simulate authentication process
-    login(); // Log the user in
-    navigate('/dashboard'); // Redirect to the dashboard
+    const data = await response.json();
+    if (response.ok) {
+      localStorage.setItem('token', data.token); // Store the token for future use
+      setIsAuthenticated(true); // Update the state to indicate the user is logged in
+      navigate('/dashboard'); // Redirect to the dashboard
+    } else {
+      alert('Error: ' + data.message);
+    }
   };
 
   return (
-    <Container>
-      <FormWrapper>
-        <FormTitle>Sign In</FormTitle>
-        <Form onSubmit={handleSignIn}>
-          <Input type="email" placeholder="Email" />
-          <Input type="password" placeholder="Password" />
-          <Button type="submit">Sign In</Button>
-        </Form>
-        <Text>
-          <Link to="/forgot-password">Forgot Password?</Link>
-        </Text>
-        <Text>
-          Don't have an account? <Link to="/signup">Sign Up</Link>
-        </Text>
-      </FormWrapper>
-    </Container>
+    <div>
+      <h1>Sign In</h1>
+      <form onSubmit={handleSignin}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Sign In</button>
+      </form>
+    </div>
   );
-};
+}
 
-export default SignInPage;
+export default Signin;
