@@ -1,89 +1,68 @@
-// LogActivityPage.js
-import React from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: ${(props) => props.theme.colors.background};
-`;
-
-const FormWrapper = styled.div`
-  width: 100%;
-  max-width: 600px;
-  padding: 2rem;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  text-align: center;
-`;
-
-const FormTitle = styled.h2`
-  margin-bottom: 1.5rem;
-  color: ${(props) => props.theme.colors.primary};
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const Input = styled.input`
-  padding: 0.8rem;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-`;
-
-const Textarea = styled.textarea`
-  padding: 0.8rem;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-`;
-
-const Button = styled.button`
-  padding: 0.8rem;
-  font-size: 1rem;
-  background-color: ${(props) => props.theme.colors.button};
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: ${(props) => props.theme.colors.primary};
-  }
-`;
-
-const LogActivityPage = () => {
+function LogActivity() {
+  const [activity, setActivity] = useState('');
+  const [carbonImpact, setCarbonImpact] = useState('');
+  const [message, setMessage] = useState('');
   const navigate = useNavigate(); // Initialize useNavigate
 
-  const handleLogActivity = (event) => {
-    event.preventDefault();
-    // Handle activity logging logic here
-    alert('Activity logged!'); // Simulate logging activity
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    navigate('/dashboard'); // Navigate back to the dashboard after logging the activity
+    // Log the activity and carbon impact
+    console.log('Activity:', activity);
+    console.log('Carbon Impact:', carbonImpact);
+
+    // Set success message
+    setMessage(`Activity "${activity}" with impact ${carbonImpact} has been logged.`);
+
+    // Clear form fields
+    setActivity('');
+    setCarbonImpact('');
+  };
+
+  // Navigate back to the dashboard
+  const goToDashboard = () => {
+    navigate('/dashboard'); // Navigate to the dashboard
   };
 
   return (
-    <Container>
-      <FormWrapper>
-        <FormTitle>Log Activity</FormTitle>
-        <Form onSubmit={handleLogActivity}>
-          <Input type="text" placeholder="Activity Name" required />
-          <Textarea placeholder="Activity Description" rows="4" required />
-          <Button type="submit">Log Activity</Button>
-        </Form>
-      </FormWrapper>
-    </Container>
-  );
-};
+    <div>
+      <h1>Log Activity</h1>
+      {message && <p>{message}</p>}
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>
+            Activity:
+            <input
+              type="text"
+              value={activity}
+              onChange={(e) => setActivity(e.target.value)}
+              placeholder="E.g., Biking, Recycling"
+              required
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            Carbon Impact (kg CO2):
+            <input
+              type="number"
+              value={carbonImpact}
+              onChange={(e) => setCarbonImpact(e.target.value)}
+              placeholder="E.g., -2.5"
+              required
+            />
+          </label>
+        </div>
+        <button type="submit">Log Activity</button>
+      </form>
 
-export default LogActivityPage;
+      {/* Add a button to go back to the dashboard */}
+      <button onClick={goToDashboard}>Back to Dashboard</button>
+    </div>
+  );
+}
+
+export default LogActivity;
