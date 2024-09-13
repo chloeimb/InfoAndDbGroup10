@@ -1,82 +1,53 @@
-// SignUpPage.js
-import React from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: ${(props) => props.theme.colors.background};
-`;
+function Signup() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // To navigate to the sign-in page after sign-up
 
-const FormWrapper = styled.div`
-  width: 100%;
-  max-width: 400px;
-  padding: 2rem;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  text-align: center;
-`;
+  const handleSignup = async (e) => {
+    e.preventDefault();
 
-const FormTitle = styled.h2`
-  margin-bottom: 1.5rem;
-  color: ${(props) => props.theme.colors.primary};
-`;
+    const response = await fetch('http://localhost:3000/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
+    const data = await response.json();
+    if (response.ok) {
+      alert('User registered successfully');
+      navigate('/signin'); // Redirect to the sign-in page after successful sign-up
+    } else {
+      alert('Error: ' + data.message);
+    }
+  };
 
-const Input = styled.input`
-  padding: 0.8rem;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-`;
-
-const Button = styled.button`
-  padding: 0.8rem;
-  font-size: 1rem;
-  background-color: ${(props) => props.theme.colors.button};
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: ${(props) => props.theme.colors.primary};
-  }
-`;
-
-const Text = styled.p`
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  color: ${(props) => props.theme.colors.text};
-`;
-
-const SignUpPage = () => {
   return (
-    <Container>
-      <FormWrapper>
-        <FormTitle>Sign Up</FormTitle>
-        <Form>
-          <Input type="text" placeholder="Username" />
-          <Input type="email" placeholder="Email" />
-          <Input type="password" placeholder="Password" />
-          <Button type="submit">Sign Up</Button>
-        </Form>
-        <Text>
-          Already have an account? <Link to="/signin">Sign In</Link>
-        </Text>
-      </FormWrapper>
-    </Container>
+    <div>
+      <h1>Sign Up</h1>
+      <form onSubmit={handleSignup}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
   );
-};
+}
 
-export default SignUpPage;
+export default Signup;
