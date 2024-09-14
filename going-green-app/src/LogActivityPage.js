@@ -1,30 +1,26 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import BottomNav from './BottomNav'; // Import the BottomNav component
 
-function LogActivity() {
+function LogActivity({ userId }) {
   const [activity, setActivity] = useState('');
   const [carbonImpact, setCarbonImpact] = useState('');
   const [message, setMessage] = useState('');
-  const navigate = useNavigate(); // Initialize useNavigate
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Log the activity and carbon impact
-    console.log('Activity:', activity);
-    console.log('Carbon Impact:', carbonImpact);
-
-    // Set success message
-    setMessage(`Activity "${activity}" with impact ${carbonImpact} has been logged.`);
-
-    // Clear form fields
-    setActivity('');
-    setCarbonImpact('');
-  };
-
-  // Navigate back to the dashboard
-  const goToDashboard = () => {
-    navigate('/dashboard'); // Navigate to the dashboard
+    const response = await fetch('http://localhost:3000/api/log-activity', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, activity, carbonImpact }),
+    });
+    const data = await response.json();
+    if (response.ok) {
+      setMessage(`Activity "${activity}" with impact ${carbonImpact} logged.`);
+      setActivity('');
+      setCarbonImpact('');
+    } else {
+      alert('Error: ' + data.message);
+    }
   };
 
   return (
@@ -32,35 +28,25 @@ function LogActivity() {
       <h1>Log Activity</h1>
       {message && <p>{message}</p>}
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Activity:
-            <input
-              type="text"
-              value={activity}
-              onChange={(e) => setActivity(e.target.value)}
-              placeholder="E.g., Biking, Recycling"
-              required
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Carbon Impact (kg CO2):
-            <input
-              type="number"
-              value={carbonImpact}
-              onChange={(e) => setCarbonImpact(e.target.value)}
-              placeholder="E.g., -2.5"
-              required
-            />
-          </label>
-        </div>
+        <label>Activity:
+          <input
+            type="text"
+            value={activity}
+            onChange={(e) => setActivity(e.target.value)}
+            required
+          />
+        </label>
+        <label>Carbon Impact (kg CO2):
+          <input
+            type="number"
+            value={carbonImpact}
+            onChange={(e) => setCarbonImpact(e.target.value)}
+            required
+          />
+        </label>
         <button type="submit">Log Activity</button>
       </form>
-
-      {/* Add a button to go back to the dashboard */}
-      <button onClick={goToDashboard}>Back to Dashboard</button>
+      <BottomNav /> {/* Include the bottom navigation bar */}
     </div>
   );
 }
