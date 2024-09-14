@@ -38,8 +38,6 @@ const BottomRibbon = () => {
     <FixedRibbon>
       <Button to="/dashboard">Dashboard</Button>
       <Button to="/log-activity">Log Activity</Button>
-      <Button to="/articles">Articles</Button>
-      <Button to="/faq">FAQ</Button>
     </FixedRibbon>
   );
 };
