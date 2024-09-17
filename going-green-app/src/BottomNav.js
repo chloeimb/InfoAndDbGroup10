@@ -8,6 +8,7 @@ function BottomNav() {
       <Link to="/dashboard" className="nav-button">Dashboard</Link>
       <Link to="/log-activity" className="nav-button">Log Activity</Link>
       <Link to="/articles" className="nav-button">Articles</Link>
+      <Link to="/faq" className="nav-button">FAQ</Link> {/* Add FAQ link */}
     </div>
   );
 }
