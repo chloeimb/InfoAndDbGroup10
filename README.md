@@ -12,8 +12,8 @@
 
 3. Install Dependencies
    After cloning you will need to install the project's dependencies
-   * npm install
-   * install oracledb
+   * ```npm install```
+   * ```install oracledb```
 
 4. (Backend) Set up your environment variables
    * Create a .env file in the backend directory to store sensitive information.
@@ -42,5 +42,5 @@
    ``` 
 
 6. Deploy the app for development and testing.
-   * backend -> node app.js
-   * frontend -> npm start
+   * backend -> ```node app.js```
+   * frontend -> ```npm start```
