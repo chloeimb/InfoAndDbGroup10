@@ -1,39 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Signup from './SignUpPage';
 import Signin from './SignInPage';
 import Dashboard from './Dashboard';
-import LogActivity from './LogActivityPage';  // Import the Log Activity component
+import LogActivity from './LogActivityPage';
+import Articles from './Articles'; // Import the Articles component
 
 function App() {
-  // State to track if the user is authenticated
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userId, setUserId] = useState(null); // Track the logged-in user's ID
 
   return (
     <Router>
       <Routes>
-        {/* Sign-Up Page */}
         <Route path="/signup" element={<Signup />} />
-
-        {/* Sign-In Page (pass setIsAuthenticated to manage login state) */}
-        <Route
-          path="/signin"
-          element={<Signin setIsAuthenticated={setIsAuthenticated} />}
-        />
-
-        {/* Dashboard (protected route) */}
-        <Route
-          path="/dashboard"
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/signin" />}
-        />
-
-        {/* Log Activity Page (protected route) */}
-        <Route
-          path="/log-activity"
-          element={isAuthenticated ? <LogActivity /> : <Navigate to="/signin" />}
-        />
-
-        {/* Default Route */}
+        <Route path="/signin" element={<Signin setIsAuthenticated={setIsAuthenticated} setUserId={setUserId} />} />
+        <Route path="/dashboard" element={isAuthenticated ? <Dashboard userId={userId} /> : <Navigate to="/signin" />} />
+        <Route path="/log-activity" element={isAuthenticated ? <LogActivity userId={userId} /> : <Navigate to="/signin" />} />
+        <Route path="/articles" element={isAuthenticated ? <Articles /> : <Navigate to="/signin" />} /> {/* Articles Route */}
         <Route path="/" element={<Navigate to="/signin" />} />
       </Routes>
     </Router>
