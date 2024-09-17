@@ -1,12 +1,26 @@
-import React from 'react';
-import BottomNav from './BottomNav'; // Import the BottomNav component
+import React, { useEffect, useState } from 'react';
+import ActivityChart from './ActivityChart'; // Import the chart component
+import BottomNav from './BottomNav';
 
 function Dashboard({ userId }) {
-  // Render the dashboard content here
+  const [activities, setActivities] = useState([]);
+
+  useEffect(() => {
+    // Fetch user activities from the backend
+    const fetchActivities = async () => {
+      const response = await fetch(`http://localhost:3000/api/activities/${userId}`);
+      const data = await response.json();
+      setActivities(data); // Store the activities data
+    };
+
+    fetchActivities();
+  }, [userId]);
+
   return (
     <div>
       <h1>Welcome to the Dashboard</h1>
-      <BottomNav /> {/* Include the bottom navigation bar */}
+      <ActivityChart data={activities} /> {/* Pass activities to the chart */}
+      <BottomNav />
     </div>
   );
 }
