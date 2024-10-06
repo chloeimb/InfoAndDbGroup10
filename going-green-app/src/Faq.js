@@ -1,33 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import BottomNav from './BottomNav'; // Import the bottom navigation bar
+import React from 'react';
+import { Container, Typography, Accordion, AccordionSummary, AccordionDetails, Box } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import BottomNav from './BottomNav'; // Import your BottomNav component
 
-function Faq() {
-  const [faqs, setFaqs] = useState([]);
+// Sample FAQ data
+const faqData = [
+  {
+    question: "What is the purpose of this app?",
+    answer: "This app helps users track their carbon footprint by logging daily activities and viewing trends over time."
+  },
+  {
+    question: "How do I log an activity?",
+    answer: "To log an activity, navigate to the Log Activity page, select the activity type, enter the relevant details, and submit."
+  },
+  {
+    question: "Can I edit my logged activities?",
+    answer: "Currently, the app does not support editing of logged activities, but this feature will be added in the next release."
+  },
+  {
+    question: "How is the carbon impact calculated?",
+    answer: "The carbon impact is calculated based on standard emissions factors for various activities, such as driving, biking, and walking."
+  }
+];
 
-  // Fetch FAQs (you can replace this with an API call later)
-  useEffect(() => {
-    const fetchedFaqs = [
-      { id: 1, question: 'What is a carbon footprint?', answer: 'A carbon footprint is the total amount of greenhouse gases emitted by an individual, event, organization, or product.' },
-      { id: 2, question: 'How can I reduce my carbon footprint?', answer: 'You can reduce your carbon footprint by using renewable energy, minimizing waste, and reducing energy consumption.' },
-      { id: 3, question: 'What are the benefits of renewable energy?', answer: 'Renewable energy reduces dependency on fossil fuels, lowers greenhouse gas emissions, and supports a sustainable environment.' },
-    ];
-    setFaqs(fetchedFaqs);
-  }, []);
-
+const FAQ = () => {
   return (
-    <div>
-      <h1>Frequently Asked Questions</h1>
-      <div className="faq-list">
-        {faqs.map(faq => (
-          <div key={faq.id} className="faq-item">
-            <h2>{faq.question}</h2>
-            <p>{faq.answer}</p>
-          </div>
-        ))}
-      </div>
-      <BottomNav /> {/* Include the bottom navigation bar */}
-    </div>
-  );
-}
+    <Container maxWidth="md" sx={{ mt: 4, mb: 10 /* Adjust margin bottom for the BottomNav */ }}>
+      <Typography variant="h4" gutterBottom>
+        Frequently Asked Questions
+      </Typography>
 
-export default Faq;
+      {/* FAQ List */}
+      <Box>
+        {faqData.map((faq, index) => (
+          <Accordion key={index}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">{faq.question}</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography>{faq.answer}</Typography>
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </Box>
+
+      {/* Bottom Navigation */}
+      <BottomNav />
+    </Container>
+  );
+};
+
+export default FAQ;
