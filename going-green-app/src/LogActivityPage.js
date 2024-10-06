@@ -1,54 +1,139 @@
 import React, { useState } from 'react';
-import BottomNav from './BottomNav'; // Import the BottomNav component
+import { Container, Typography, MenuItem, TextField, Button } from '@mui/material';
+import BottomNav from './BottomNav'; // Import the ribbon
+import './BottomNav.css'; // Import the custom CSS for styling
 
-function LogActivity({ userId }) {
-  const [activity, setActivity] = useState('');
-  const [carbonImpact, setCarbonImpact] = useState('');
-  const [message, setMessage] = useState('');
+const LogActivity = () => {
+  const [activityType, setActivityType] = useState('');
+  const [distance, setDistance] = useState('');
+  const [time, setTime] = useState('');
+  const [activities, setActivities] = useState([]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const response = await fetch('http://localhost:3000/api/log-activity', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, activity, carbonImpact }),
-    });
-    const data = await response.json();
-    if (response.ok) {
-      setMessage(`Activity "${activity}" with impact ${carbonImpact} logged.`);
-      setActivity('');
-      setCarbonImpact('');
-    } else {
-      alert('Error: ' + data.message);
-    }
+  const handleActivityChange = (event) => {
+    setActivityType(event.target.value);
+  };
+
+  const handleDistanceChange = (event) => {
+    setDistance(event.target.value);
+  };
+
+  const handleTimeChange = (event) => {
+    setTime(event.target.value);
+  };
+
+  const logActivity = () => {
+    const co2Emission = calculateCO2Emission(activityType, distance, time);
+
+    // Add the new activity to the list
+    setActivities([
+      ...activities,
+      {
+        activityType,
+        distance,
+        time,
+        co2Emission,
+      },
+    ]);
+
+    // Clear the fields after logging
+    setActivityType('');
+    setDistance('');
+    setTime('');
   };
 
   return (
-    <div>
-      <h1>Log Activity</h1>
-      {message && <p>{message}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>Activity:
-          <input
-            type="text"
-            value={activity}
-            onChange={(e) => setActivity(e.target.value)}
-            required
-          />
-        </label>
-        <label>Carbon Impact (kg CO2):
-          <input
-            type="number"
-            value={carbonImpact}
-            onChange={(e) => setCarbonImpact(e.target.value)}
-            required
-          />
-        </label>
-        <button type="submit">Log Activity</button>
-      </form>
-      <BottomNav /> {/* Include the bottom navigation bar */}
-    </div>
+    <Container>
+      <Typography variant="h4" gutterBottom>
+        Log Activity
+      </Typography>
+      
+      <TextField
+        select
+        label="Activity Type"
+        value={activityType}
+        onChange={handleActivityChange}
+        fullWidth
+        margin="normal"
+      >
+        <MenuItem value="driving">Driving</MenuItem>
+        <MenuItem value="walking">Walking</MenuItem>
+        <MenuItem value="biking">Biking</MenuItem>
+        {/* Add more activities as needed */}
+      </TextField>
+      
+      {activityType === 'driving' && (
+        <TextField
+          label="Distance (miles)"
+          type="number"
+          value={distance}
+          onChange={handleDistanceChange}
+          fullWidth
+          margin="normal"
+        />
+      )}
+
+      {activityType === 'walking' && (
+        <TextField
+          label="Time (minutes)"
+          type="number"
+          value={time}
+          onChange={handleTimeChange}
+          fullWidth
+          margin="normal"
+        />
+      )}
+
+      {activityType === 'biking' && (
+        <TextField
+          label="Distance (miles)"
+          type="number"
+          value={distance}
+          onChange={handleDistanceChange}
+          fullWidth
+          margin="normal"
+        />
+      )}
+      
+      <Button 
+        variant="contained" 
+        color="primary" 
+        onClick={logActivity}
+        fullWidth
+        sx={{ mt: 2 }}
+      >
+        Log Activity
+      </Button>
+
+      <Typography variant="h6" sx={{ mt: 4 }}>
+        Logged Activities
+      </Typography>
+      <ul>
+        {activities.map((activity, index) => (
+          <li key={index}>
+            {activity.activityType} - CO2 Emission: {activity.co2Emission} kg
+          </li>
+        ))}
+      </ul>
+
+      {/* Ribbon at the bottom */}
+      <BottomNav />
+    </Container>
   );
-}
+};
+
+// CO2 emission calculation logic
+const calculateCO2Emission = (activityType, distance, time) => {
+  let co2Emission = 0;
+
+  if (activityType === 'driving') {
+    co2Emission = distance * 0.404; // 0.404 kg CO2 per mile driven
+  } else if (activityType === 'walking') {
+    co2Emission = (time / 30) * 0.06; // 0.06 kg CO2 per 30 minutes walking
+  } else if (activityType === 'biking') {
+    co2Emission = distance * 0.05; // 0.05 kg CO2 per mile biking
+  }
+
+  return co2Emission.toFixed(2); // Return result with 2 decimal places
+};
 
 export default LogActivity;
