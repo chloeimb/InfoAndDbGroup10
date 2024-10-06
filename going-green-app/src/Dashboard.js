@@ -20,52 +20,12 @@ const worldTrendsData = {
   ],
 };
 
-// Sample Data for Your Trends Chart
 const yourTrendsDataWeek = {
   labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
   datasets: [
     {
       label: 'Your Trends (Weekly)',
       data: [100, 200, 150, 300],
-      borderColor: '#82ca9d',
-      borderWidth: 2,
-      fill: false,
-    },
-  ],
-};
-
-const yourTrendsDataMonth = {
-  labels: ['Month 1', 'Month 2', 'Month 3', 'Month 4'],
-  datasets: [
-    {
-      label: 'Your Trends (Monthly)',
-      data: [300, 500, 400, 700],
-      borderColor: '#82ca9d',
-      borderWidth: 2,
-      fill: false,
-    },
-  ],
-};
-
-const yourTrendsDataQuarter = {
-  labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-  datasets: [
-    {
-      label: 'Your Trends (Quarterly)',
-      data: [600, 400, 800, 1000],
-      borderColor: '#82ca9d',
-      borderWidth: 2,
-      fill: false,
-    },
-  ],
-};
-
-const yourTrendsDataYear = {
-  labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4'],
-  datasets: [
-    {
-      label: 'Your Trends (Yearly)',
-      data: [1200, 1300, 1100, 1400],
       borderColor: '#82ca9d',
       borderWidth: 2,
       fill: false,
@@ -85,29 +45,15 @@ const chartOptions = {
 };
 
 const Dashboard = () => {
-  // State for Overall Measurements Dropdown
+  const [yourTrendsPeriod, setYourTrendsPeriod] = useState('Week');
   const [measurement, setMeasurement] = useState('CO2 Emissions');
 
-  // State for Your Trends time period (Week, Month, Quarter, Year)
-  const [yourTrendsPeriod, setYourTrendsPeriod] = useState('Week');
-
-  // Function to change the dataset based on selected time period
   const handleYourTrendsPeriodChange = (period) => {
     setYourTrendsPeriod(period);
   };
 
-  // Choose the appropriate dataset based on the selected time period
   const getYourTrendsData = () => {
-    switch (yourTrendsPeriod) {
-      case 'Month':
-        return yourTrendsDataMonth;
-      case 'Quarter':
-        return yourTrendsDataQuarter;
-      case 'Year':
-        return yourTrendsDataYear;
-      default:
-        return yourTrendsDataWeek;
-    }
+    return yourTrendsDataWeek; // Return the appropriate dataset (static example)
   };
 
   return (
@@ -116,37 +62,32 @@ const Dashboard = () => {
         Dashboard
       </Typography>
 
-      {/* World Trends Section */}
-      <Box component={Paper} elevation={3} sx={{ padding: 2, marginBottom: 3 }}>
-        <Typography variant="h5" gutterBottom>
-          World Trends
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={9}>
-            <Line data={worldTrendsData} options={chartOptions} />
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+      {/* Grid for Side-by-Side Charts */}
+      <Grid container spacing={2}>
+        {/* World Trends Section */}
+        <Grid item xs={12} md={6}>
+          <Box component={Paper} elevation={3} sx={{ padding: 2 }}>
+            <Typography variant="h5" gutterBottom>
+              World Trends
+            </Typography>
+            <Line data={worldTrendsData} options={chartOptions} height={200} />
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 2 }}>
               <Button variant="outlined">Week</Button>
               <Button variant="outlined">Month</Button>
               <Button variant="outlined">Quarter</Button>
               <Button variant="outlined">Year</Button>
             </Box>
-          </Grid>
+          </Box>
         </Grid>
-      </Box>
 
-      {/* Your Trends Section */}
-      <Box component={Paper} elevation={3} sx={{ padding: 2, marginBottom: 3 }}>
-        <Typography variant="h5" gutterBottom>
-          Your Trends
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={9}>
-            <Line data={getYourTrendsData()} options={chartOptions} />
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        {/* Your Trends Section */}
+        <Grid item xs={12} md={6}>
+          <Box component={Paper} elevation={3} sx={{ padding: 2 }}>
+            <Typography variant="h5" gutterBottom>
+              Your Trends
+            </Typography>
+            <Line data={getYourTrendsData()} options={chartOptions} height={200} />
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 2 }}>
               <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Week')}>
                 Week
               </Button>
@@ -160,12 +101,12 @@ const Dashboard = () => {
                 Year
               </Button>
             </Box>
-          </Grid>
+          </Box>
         </Grid>
-      </Box>
+      </Grid>
 
       {/* Overall Measurements Dropdown */}
-      <Box sx={{ marginBottom: 3 }}>
+      <Box sx={{ marginTop: 3 }}>
         <Typography variant="h6" gutterBottom>
           Overall Measurements
         </Typography>
