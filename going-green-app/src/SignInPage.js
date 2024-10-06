@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { Container, TextField, Button, Typography, Box } from '@mui/material';
 
 function Signin({ setIsAuthenticated }) {
   const [email, setEmail] = useState('');
@@ -29,27 +29,57 @@ function Signin({ setIsAuthenticated }) {
   };
 
   return (
-    <div>
-      <h1>Sign In</h1>
-      <form onSubmit={handleSignin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Sign In</button>
-      </form>
-      <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
-    </div>
+    <Container maxWidth="sm">
+      <Box 
+        sx={{
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          mt: 8
+        }}
+      >
+        <Typography variant="h4" gutterBottom>
+          Sign In
+        </Typography>
+
+        <form onSubmit={handleSignin} style={{ width: '100%', marginTop: '1rem' }}>
+          <TextField
+            label="Email"
+            type="email"
+            fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Password"
+            type="password"
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            margin="normal"
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            fullWidth
+            sx={{ mt: 2, mb: 2 }}
+          >
+            Sign In
+          </Button>
+        </form>
+
+        <Typography variant="body1">
+          Don't have an account?{' '}
+          <Link to="/signup" style={{ textDecoration: 'none', color: '#1976d2' }}>
+            Sign Up
+          </Link>
+        </Typography>
+      </Box>
+    </Container>
   );
 }
 

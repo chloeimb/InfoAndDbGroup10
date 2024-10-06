@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Container, TextField, Button, Typography, Box } from '@mui/material';
 
 function Signup() {
   const [email, setEmail] = useState('');
@@ -27,26 +28,57 @@ function Signup() {
   };
 
   return (
-    <div>
-      <h1>Sign Up</h1>
-      <form onSubmit={handleSignup}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Sign Up</button>
-      </form>
-    </div>
+    <Container maxWidth="sm">
+      <Box 
+        sx={{
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          mt: 8
+        }}
+      >
+        <Typography variant="h4" gutterBottom>
+          Sign Up
+        </Typography>
+
+        <form onSubmit={handleSignup} style={{ width: '100%', marginTop: '1rem' }}>
+          <TextField
+            label="Email"
+            type="email"
+            fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Password"
+            type="password"
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            margin="normal"
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            fullWidth
+            sx={{ mt: 2, mb: 2 }}
+          >
+            Sign Up
+          </Button>
+        </form>
+
+        <Typography variant="body1">
+          Already have an account?{' '}
+          <a href="/signin" style={{ textDecoration: 'none', color: '#1976d2' }}>
+            Sign In
+          </a>
+        </Typography>
+      </Box>
+    </Container>
   );
 }
 
