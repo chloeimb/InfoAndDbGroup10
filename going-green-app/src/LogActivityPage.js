@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Typography, MenuItem, TextField, Button } from '@mui/material';
 import BottomNav from './BottomNav'; // Import the ribbon
 import './BottomNav.css'; // Import the custom CSS for styling
+import backgroundImage from './images/logactivityimage.png'; // Adjust this path
 
 const LogActivity = () => {
   const [activityType, setActivityType] = useState('');
@@ -42,82 +43,106 @@ const LogActivity = () => {
   };
 
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        Log Activity
-      </Typography>
-      
-      <TextField
-        select
-        label="Activity Type"
-        value={activityType}
-        onChange={handleActivityChange}
-        fullWidth
-        margin="normal"
+    <div
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        minHeight: '100vh', // Full screen height
+        width: '100vw', // Full screen width
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between', // Ensures space is between form and BottomNav
+        alignItems: 'center', // Center content horizontally
+      }}
+    >
+      <Container sx={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', padding: 4, borderRadius: 2, boxShadow: 3, mt: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Log Activity
+        </Typography>
+
+        <TextField
+          select
+          label="Activity Type"
+          value={activityType}
+          onChange={handleActivityChange}
+          fullWidth
+          margin="normal"
+        >
+          <MenuItem value="driving">Driving</MenuItem>
+          <MenuItem value="walking">Walking</MenuItem>
+          <MenuItem value="biking">Biking</MenuItem>
+        </TextField>
+
+        {activityType === 'driving' && (
+          <TextField
+            label="Distance (miles)"
+            type="number"
+            value={distance}
+            onChange={handleDistanceChange}
+            fullWidth
+            margin="normal"
+          />
+        )}
+
+        {activityType === 'walking' && (
+          <TextField
+            label="Time (minutes)"
+            type="number"
+            value={time}
+            onChange={handleTimeChange}
+            fullWidth
+            margin="normal"
+          />
+        )}
+
+        {activityType === 'biking' && (
+          <TextField
+            label="Distance (miles)"
+            type="number"
+            value={distance}
+            onChange={handleDistanceChange}
+            fullWidth
+            margin="normal"
+          />
+        )}
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={logActivity}
+          fullWidth
+          sx={{ mt: 2 }}
+        >
+          Log Activity
+        </Button>
+
+        <Typography variant="h6" sx={{ mt: 4 }}>
+          Logged Activities
+        </Typography>
+        <ul>
+          {activities.map((activity, index) => (
+            <li key={index}>
+              {activity.activityType} - CO2 Emission: {activity.co2Emission} kg
+            </li>
+          ))}
+        </ul>
+      </Container>
+
+      {/* Bottom Navigation */}
+      <div 
+        style={{
+          width: '100%',
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          display: 'flex',
+          justifyContent: 'center', // Center the BottomNav horizontally
+        }}
       >
-        <MenuItem value="driving">Driving</MenuItem>
-        <MenuItem value="walking">Walking</MenuItem>
-        <MenuItem value="biking">Biking</MenuItem>
-        {/* Add more activities as needed */}
-      </TextField>
-      
-      {activityType === 'driving' && (
-        <TextField
-          label="Distance (miles)"
-          type="number"
-          value={distance}
-          onChange={handleDistanceChange}
-          fullWidth
-          margin="normal"
-        />
-      )}
-
-      {activityType === 'walking' && (
-        <TextField
-          label="Time (minutes)"
-          type="number"
-          value={time}
-          onChange={handleTimeChange}
-          fullWidth
-          margin="normal"
-        />
-      )}
-
-      {activityType === 'biking' && (
-        <TextField
-          label="Distance (miles)"
-          type="number"
-          value={distance}
-          onChange={handleDistanceChange}
-          fullWidth
-          margin="normal"
-        />
-      )}
-      
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={logActivity}
-        fullWidth
-        sx={{ mt: 2 }}
-      >
-        Log Activity
-      </Button>
-
-      <Typography variant="h6" sx={{ mt: 4 }}>
-        Logged Activities
-      </Typography>
-      <ul>
-        {activities.map((activity, index) => (
-          <li key={index}>
-            {activity.activityType} - CO2 Emission: {activity.co2Emission} kg
-          </li>
-        ))}
-      </ul>
-
-      {/* Ribbon at the bottom */}
-      <BottomNav />
-    </Container>
+        <BottomNav />
+      </div>
+    </div>
   );
 };
 

@@ -3,6 +3,7 @@ import { Container, Typography, Box, Button, Grid, Paper, MenuItem, Select, Form
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import BottomNav from './BottomNav';
+import backgroundImage from './images/dashboardimage.png'; // Adjust this path
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -57,77 +58,103 @@ const Dashboard = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 10 }}>
-      <Typography variant="h4" gutterBottom>
-        Dashboard
-      </Typography>
-
-      {/* Grid for Side-by-Side Charts */}
-      <Grid container spacing={2}>
-        {/* World Trends Section */}
-        <Grid item xs={12} md={6}>
-          <Box component={Paper} elevation={3} sx={{ padding: 2 }}>
-            <Typography variant="h5" gutterBottom>
-              World Trends
-            </Typography>
-            <Line data={worldTrendsData} options={chartOptions} height={200} />
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 2 }}>
-              <Button variant="outlined">Week</Button>
-              <Button variant="outlined">Month</Button>
-              <Button variant="outlined">Quarter</Button>
-              <Button variant="outlined">Year</Button>
-            </Box>
-          </Box>
-        </Grid>
-
-        {/* Your Trends Section */}
-        <Grid item xs={12} md={6}>
-          <Box component={Paper} elevation={3} sx={{ padding: 2 }}>
-            <Typography variant="h5" gutterBottom>
-              Your Trends
-            </Typography>
-            <Line data={getYourTrendsData()} options={chartOptions} height={200} />
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 2 }}>
-              <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Week')}>
-                Week
-              </Button>
-              <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Month')}>
-                Month
-              </Button>
-              <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Quarter')}>
-                Quarter
-              </Button>
-              <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Year')}>
-                Year
-              </Button>
-            </Box>
-          </Box>
-        </Grid>
-      </Grid>
-
-      {/* Overall Measurements Dropdown */}
-      <Box sx={{ marginTop: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Overall Measurements
+    <div
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        minHeight: '100vh', // Full screen height
+        width: '100vw', // Full screen width
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between', // Distribute content between top and bottom
+        alignItems: 'center',
+        paddingTop: '20px',
+      }}
+    >
+      <Container maxWidth="lg" sx={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', padding: 4, borderRadius: 2, boxShadow: 3, mt: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Dashboard
         </Typography>
-        <FormControl fullWidth>
-          <InputLabel id="measurement-select-label">Measurement</InputLabel>
-          <Select
-            labelId="measurement-select-label"
-            value={measurement}
-            label="Measurement"
-            onChange={(event) => setMeasurement(event.target.value)}
-          >
-            <MenuItem value="CO2 Emissions">CO2 Emissions</MenuItem>
-            <MenuItem value="Water Usage">Water Usage</MenuItem>
-            <MenuItem value="Energy Consumption">Energy Consumption</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
+
+        {/* Grid for Side-by-Side Charts */}
+        <Grid container spacing={2}>
+          {/* World Trends Section */}
+          <Grid item xs={12} md={6}>
+            <Box component={Paper} elevation={3} sx={{ padding: 2, backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
+              <Typography variant="h5" gutterBottom>
+                World Trends
+              </Typography>
+              <Line data={worldTrendsData} options={chartOptions} height={200} />
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 2 }}>
+                <Button variant="outlined">Week</Button>
+                <Button variant="outlined">Month</Button>
+                <Button variant="outlined">Quarter</Button>
+                <Button variant="outlined">Year</Button>
+              </Box>
+            </Box>
+          </Grid>
+
+          {/* Your Trends Section */}
+          <Grid item xs={12} md={6}>
+            <Box component={Paper} elevation={3} sx={{ padding: 2, backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
+              <Typography variant="h5" gutterBottom>
+                Your Trends
+              </Typography>
+              <Line data={getYourTrendsData()} options={chartOptions} height={200} />
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 2 }}>
+                <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Week')}>
+                  Week
+                </Button>
+                <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Month')}>
+                  Month
+                </Button>
+                <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Quarter')}>
+                  Quarter
+                </Button>
+                <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Year')}>
+                  Year
+                </Button>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+
+        {/* Overall Measurements Dropdown */}
+        <Box sx={{ marginTop: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Overall Measurements
+          </Typography>
+          <FormControl fullWidth>
+            <InputLabel id="measurement-select-label">Measurement</InputLabel>
+            <Select
+              labelId="measurement-select-label"
+              value={measurement}
+              label="Measurement"
+              onChange={(event) => setMeasurement(event.target.value)}
+            >
+              <MenuItem value="CO2 Emissions">CO2 Emissions</MenuItem>
+              <MenuItem value="Water Usage">Water Usage</MenuItem>
+              <MenuItem value="Energy Consumption">Energy Consumption</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </Container>
 
       {/* Bottom Navigation */}
-      <BottomNav />
-    </Container>
+      <div 
+        style={{
+          width: '100%',
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          display: 'flex',
+          justifyContent: 'center', // Center the BottomNav horizontally
+        }}
+      >
+        <BottomNav />
+      </div>
+    </div>
   );
 };
 
