@@ -1,0 +1,10 @@
+CREATE TABLE Activity (
+    ActivityID NUMBER PRIMARY KEY,
+    UserID NUMBER NOT NULL,
+    ActivityType VARCHAR2(100) NOT NULL,
+    CO2Emission NUMBER NOT NULL CHECK (CO2Emission >= 0),
+    Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CategoryID NUMBER NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES Users2(UserID),
+    FOREIGN KEY (CategoryID) REFERENCES EmissionCategory(CategoryID)
+);

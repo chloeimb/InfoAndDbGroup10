@@ -1,0 +1,8 @@
+CREATE TABLE Users2 (
+    UserID NUMBER PRIMARY KEY,
+    Username VARCHAR2(50) NOT NULL,
+    Email VARCHAR2(100) NOT NULL UNIQUE,
+    PasswordHash VARCHAR2(255) NOT NULL,
+    IsAdmin CHAR(1) DEFAULT 'N' CHECK (IsAdmin IN ('Y', 'N')),
+    RegistrationDate DATE DEFAULT SYSDATE
+);
