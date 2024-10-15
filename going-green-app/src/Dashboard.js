@@ -63,15 +63,16 @@ const Dashboard = () => {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        height: '100vh', // Full screen height
+        minHeight: '100vh', // Full screen height
         width: '100vw', // Full screen width
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-start', // Align items to the top
-        alignItems: 'center', // Center horizontally
+        justifyContent: 'space-between', // Distribute content between top and bottom
+        alignItems: 'center',
+        paddingTop: '20px',
       }}
     >
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 10 }}>
+      <Container maxWidth="lg" sx={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', padding: 4, borderRadius: 2, boxShadow: 3, mt: 4 }}>
         <Typography variant="h4" gutterBottom>
           Dashboard
         </Typography>
@@ -138,10 +139,21 @@ const Dashboard = () => {
             </Select>
           </FormControl>
         </Box>
-
-        {/* Bottom Navigation */}
-        <BottomNav />
       </Container>
+
+      {/* Bottom Navigation */}
+      <div 
+        style={{
+          width: '100%',
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          display: 'flex',
+          justifyContent: 'center', // Center the BottomNav horizontally
+        }}
+      >
+        <BottomNav />
+      </div>
     </div>
   );
 };
