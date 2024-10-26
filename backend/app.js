@@ -104,6 +104,25 @@ app.post('/signin', async (req, res) => {
   }
 });
 
+// Route to log user activities
+app.post('/log-activity', async (req, res) => {
+  const { userId, activityType, distance, time, co2Emission } = req.body;
+
+  try {
+    // Insert the new activity into the USER_ACTIVITIES table
+    const insertActivity = await db.executeQuery(
+      'INSERT INTO USER_ACTIVITIES (USER_ID, ACTIVITY_TYPE, DISTANCE, TIME, CO2_EMISSION) VALUES (:userId, :activityType, :distance, :time, :co2Emission)',
+      [userId, activityType, distance, time, co2Emission]
+    );
+
+    res.status(201).json({ message: 'Activity logged successfully' });
+  } catch (error) {
+    console.error('Error logging activity:', error);
+    res.status(500).json({ message: 'Error logging activity', error });
+  }
+});
+
+
 // Start the server
 app.listen(port, async () => {
   console.log(`Server running on http://localhost:${port}`);

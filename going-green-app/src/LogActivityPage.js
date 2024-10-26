@@ -22,25 +22,52 @@ const LogActivity = () => {
     setTime(event.target.value);
   };
 
-  const logActivity = () => {
+  const logActivity = async () => {
     const co2Emission = calculateCO2Emission(activityType, distance, time);
-
-    // Add the new activity to the list
-    setActivities([
-      ...activities,
-      {
-        activityType,
-        distance,
-        time,
-        co2Emission,
-      },
-    ]);
-
-    // Clear the fields after logging
-    setActivityType('');
-    setDistance('');
-    setTime('');
+  
+    // Assuming you have a userId from your authentication context or stored globally
+    const userId = 1; // Replace this with the actual user ID from your authentication
+  
+    try {
+      const response = await fetch('http://localhost:3000/log-activity', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          activityType,
+          distance,
+          time,
+          co2Emission,
+        }),
+      });
+  
+      if (response.ok) {
+        // Successfully logged in the database
+        setActivities([
+          ...activities,
+          {
+            activityType,
+            distance,
+            time,
+            co2Emission,
+          },
+        ]);
+  
+        // Clear the fields after logging
+        setActivityType('');
+        setDistance('');
+        setTime('');
+      } else {
+        const errorData = await response.json();
+        console.error('Error logging activity:', errorData.message);
+      }
+    } catch (error) {
+      console.error('Error making request:', error);
+    }
   };
+  
 
   return (
     <div
