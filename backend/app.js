@@ -122,6 +122,23 @@ app.post('/log-activity', async (req, res) => {
   }
 });
 
+// Route to fetch user activities
+app.get('/user-activities', async (req, res) => {
+  const { userId } = req.query; // Get the userId from the query parameters
+
+  try {
+    // Fetch activities for the specific user
+    const result = await db.executeQuery('SELECT ACTIVITY_TYPE, DISTANCE, TIME, CO2_EMISSION FROM USER_ACTIVITIES WHERE USER_ID = :userId', [userId]);
+    
+    // Send the activities to the frontend
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching user activities:', error);
+    res.status(500).json({ message: 'Error fetching user activities' });
+  }
+});
+
+
 
 // Start the server
 app.listen(port, async () => {
