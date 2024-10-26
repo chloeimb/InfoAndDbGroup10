@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Container, Typography, Box, Button, Grid, Paper, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
@@ -7,7 +8,7 @@ import backgroundImage from './images/dashboardimage.png'; // Adjust this path
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-// Sample Data for Line Chart
+// Sample Data for Line Chart (World Trends remains static)
 const worldTrendsData = {
   labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
   datasets: [
@@ -15,19 +16,6 @@ const worldTrendsData = {
       label: 'World Trends',
       data: [400, 300, 500, 700],
       borderColor: '#8884d8',
-      borderWidth: 2,
-      fill: false,
-    },
-  ],
-};
-
-const yourTrendsDataWeek = {
-  labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-  datasets: [
-    {
-      label: 'Your Trends (Weekly)',
-      data: [100, 200, 150, 300],
-      borderColor: '#82ca9d',
       borderWidth: 2,
       fill: false,
     },
@@ -48,13 +36,54 @@ const chartOptions = {
 const Dashboard = () => {
   const [yourTrendsPeriod, setYourTrendsPeriod] = useState('Week');
   const [measurement, setMeasurement] = useState('CO2 Emissions');
+  const [userActivities, setUserActivities] = useState([]); // State to store user activities
 
-  const handleYourTrendsPeriodChange = (period) => {
-    setYourTrendsPeriod(period);
+  // Fetch user activities when component mounts
+  useEffect(() => {
+    const userId = 1; // Replace with the actual user ID from your authentication
+
+    // Fetch user activities from the server
+    const fetchUserActivities = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/user-activities?userId=${userId}`);
+        setUserActivities(response.data); // Store the fetched activities
+      } catch (error) {
+        console.error('Error fetching user activities:', error);
+      }
+    };
+
+    fetchUserActivities();
+  }, []);
+
+  // Function to transform user activity data into chart data
+  const getDynamicYourTrendsData = () => {
+    // Group the CO2 emissions by the week based on user activity
+    const labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4']; // Example labels
+    const co2EmissionsByWeek = [0, 0, 0, 0]; // Placeholder for weekly data aggregation
+
+    userActivities.forEach((activity) => {
+      // Simple example logic to categorize activities into weeks
+      const weekIndex = Math.floor(Math.random() * 4); // Replace with accurate week calculation if needed
+      co2EmissionsByWeek[weekIndex] += activity[3]; // Adding CO2 emission (4th column in the result)
+    });
+
+    return {
+      labels,
+      datasets: [
+        {
+          label: 'Your Trends (Weekly)',
+          data: co2EmissionsByWeek,
+          borderColor: '#82ca9d',
+          borderWidth: 2,
+          fill: false,
+        },
+      ],
+    };
   };
 
+  // Get the dynamic data for the chart
   const getYourTrendsData = () => {
-    return yourTrendsDataWeek; // Return the appropriate dataset (static example)
+    return getDynamicYourTrendsData();
   };
 
   return (
@@ -103,16 +132,16 @@ const Dashboard = () => {
               </Typography>
               <Line data={getYourTrendsData()} options={chartOptions} height={200} />
               <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 2 }}>
-                <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Week')}>
+                <Button variant="outlined" onClick={() => setYourTrendsPeriod('Week')}>
                   Week
                 </Button>
-                <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Month')}>
+                <Button variant="outlined" onClick={() => setYourTrendsPeriod('Month')}>
                   Month
                 </Button>
-                <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Quarter')}>
+                <Button variant="outlined" onClick={() => setYourTrendsPeriod('Quarter')}>
                   Quarter
                 </Button>
-                <Button variant="outlined" onClick={() => handleYourTrendsPeriodChange('Year')}>
+                <Button variant="outlined" onClick={() => setYourTrendsPeriod('Year')}>
                   Year
                 </Button>
               </Box>
