@@ -68,45 +68,46 @@ const Dashboard = () => {
     fetchUserActivities();
   }, []);
 
-  // Function to transform user activity data into chart data based on period
   const getDynamicYourTrendsData = () => {
     let labels = [];
     let co2Emissions = [];
-
+  
     if (yourTrendsPeriod === 'Week') {
-      labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-      co2Emissions = [0, 0, 0, 0];
+      // Get the current date and calculate the start of the week (Sunday)
       const currentDate = new Date();
-
+      const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay())); // Start of the current week (Sunday)
+      
+      // Generate labels for each day of the current week (Sunday to Saturday)
+      labels = Array.from({ length: 7 }, (_, i) => {
+        const dayDate = new Date(startOfWeek);
+        dayDate.setDate(startOfWeek.getDate() + i);
+        return dayDate.toLocaleDateString('en-US', { weekday: 'long' }); // e.g., "Monday", "Tuesday"
+      });
+  
+      // Initialize CO2 emissions for each day of the current week
+      co2Emissions = Array(7).fill(0);
+  
       userActivities.forEach((activity) => {
-        console.log("Processing Activity for Week:", activity); // Log each activity
         const activityDate = new Date(activity.ACTIVITY_DATE);
         const co2Emission = activity.CO2_EMISSION;
-
-        if (!isNaN(activityDate.getTime())) {
-          // Calculate the week difference from current date
-          const weekDifference = Math.floor((currentDate - activityDate) / (1000 * 60 * 60 * 24 * 7));
-          console.log(`Week Difference: ${weekDifference}, CO2 Emission: ${co2Emission}`);
-
-          if (weekDifference >= 0 && weekDifference < 4) {
-            co2Emissions[3 - weekDifference] += co2Emission;
-          }
-        } else {
-          console.error("Invalid date:", activity.ACTIVITY_DATE); // Log any invalid dates
+  
+        // Check if the activity falls within the current week
+        if (activityDate >= startOfWeek && activityDate < new Date(startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000)) {
+          const dayOfWeek = activityDate.getDay(); // 0 (Sunday) to 6 (Saturday)
+          co2Emissions[dayOfWeek] += co2Emission; // Accumulate emissions by day of the week
         }
       });
     } else if (yourTrendsPeriod === 'Month') {
       labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
       co2Emissions = [0, 0, 0, 0];
       const currentDate = new Date();
-
+  
       userActivities.forEach((activity) => {
-        console.log("Processing Activity for Month:", activity); // Log each activity
         const activityDate = new Date(activity.ACTIVITY_DATE);
         const co2Emission = activity.CO2_EMISSION;
         const currentMonth = currentDate.getMonth();
         const activityMonth = activityDate.getMonth();
-
+  
         if (activityMonth === currentMonth) {
           const weekOfMonth = Math.floor(activityDate.getDate() / 7);
           co2Emissions[weekOfMonth] += co2Emission;
@@ -117,13 +118,12 @@ const Dashboard = () => {
       co2Emissions = [0, 0, 0];
       const currentDate = new Date();
       const currentQuarter = Math.floor(currentDate.getMonth() / 3);
-
+  
       userActivities.forEach((activity) => {
-        console.log("Processing Activity for Quarter:", activity); // Log each activity
         const activityDate = new Date(activity.ACTIVITY_DATE);
         const co2Emission = activity.CO2_EMISSION;
         const activityQuarter = Math.floor(activityDate.getMonth() / 3);
-
+  
         if (activityQuarter === currentQuarter) {
           const monthInQuarter = activityDate.getMonth() % 3;
           co2Emissions[monthInQuarter] += co2Emission;
@@ -134,22 +134,21 @@ const Dashboard = () => {
       co2Emissions = [0, 0, 0, 0];
       const currentDate = new Date();
       const currentYear = currentDate.getFullYear();
-
+  
       userActivities.forEach((activity) => {
-        console.log("Processing Activity for Year:", activity); // Log each activity
         const activityDate = new Date(activity.ACTIVITY_DATE);
         const co2Emission = activity.CO2_EMISSION;
         const activityYear = activityDate.getFullYear();
-
+  
         if (activityYear === currentYear) {
           const quarter = Math.floor(activityDate.getMonth() / 3);
           co2Emissions[quarter] += co2Emission;
         }
       });
     }
-
+  
     console.log("Final CO2 Emissions:", co2Emissions); // Log the final data for debugging
-
+  
     return {
       labels,
       datasets: [
@@ -163,6 +162,7 @@ const Dashboard = () => {
       ],
     };
   };
+  
 
   // Get the dynamic data for the chart
   const getYourTrendsData = () => {
