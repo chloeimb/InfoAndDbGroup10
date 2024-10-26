@@ -42,37 +42,120 @@ const Dashboard = () => {
   useEffect(() => {
     const userId = 1; // Replace with the actual user ID from your authentication
 
-    // Fetch user activities from the server
     const fetchUserActivities = async () => {
       try {
         const response = await axios.get(`http://localhost:3000/user-activities?userId=${userId}`);
-        setUserActivities(response.data); // Store the fetched activities
+        console.log("Fetched activities:", response.data); // Log the fetched activities
+        
+        // Map data to include mock ACTIVITY_DATE for testing
+        const mappedActivities = response.data.map((activity, index) => ({
+          ACTIVITY_TYPE: activity[0],
+          DISTANCE: activity[1],
+          TIME: activity[2],
+          CO2_EMISSION: activity[3],
+          // For testing purposes, use today's date for all activities
+          ACTIVITY_DATE: new Date(new Date().setDate(new Date().getDate() - index * 7)).toISOString()
+        }));
+    
+        console.log("Mapped Activities with Mock Dates:", mappedActivities); // Log the modified activities
+        setUserActivities(mappedActivities); // Store the modified activities
       } catch (error) {
         console.error('Error fetching user activities:', error);
       }
     };
+    
 
     fetchUserActivities();
   }, []);
 
-  // Function to transform user activity data into chart data
+  // Function to transform user activity data into chart data based on period
   const getDynamicYourTrendsData = () => {
-    // Group the CO2 emissions by the week based on user activity
-    const labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4']; // Example labels
-    const co2EmissionsByWeek = [0, 0, 0, 0]; // Placeholder for weekly data aggregation
+    let labels = [];
+    let co2Emissions = [];
 
-    userActivities.forEach((activity) => {
-      // Simple example logic to categorize activities into weeks
-      const weekIndex = Math.floor(Math.random() * 4); // Replace with accurate week calculation if needed
-      co2EmissionsByWeek[weekIndex] += activity[3]; // Adding CO2 emission (4th column in the result)
-    });
+    if (yourTrendsPeriod === 'Week') {
+      labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+      co2Emissions = [0, 0, 0, 0];
+      const currentDate = new Date();
+
+      userActivities.forEach((activity) => {
+        console.log("Processing Activity for Week:", activity); // Log each activity
+        const activityDate = new Date(activity.ACTIVITY_DATE);
+        const co2Emission = activity.CO2_EMISSION;
+
+        if (!isNaN(activityDate.getTime())) {
+          // Calculate the week difference from current date
+          const weekDifference = Math.floor((currentDate - activityDate) / (1000 * 60 * 60 * 24 * 7));
+          console.log(`Week Difference: ${weekDifference}, CO2 Emission: ${co2Emission}`);
+
+          if (weekDifference >= 0 && weekDifference < 4) {
+            co2Emissions[3 - weekDifference] += co2Emission;
+          }
+        } else {
+          console.error("Invalid date:", activity.ACTIVITY_DATE); // Log any invalid dates
+        }
+      });
+    } else if (yourTrendsPeriod === 'Month') {
+      labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+      co2Emissions = [0, 0, 0, 0];
+      const currentDate = new Date();
+
+      userActivities.forEach((activity) => {
+        console.log("Processing Activity for Month:", activity); // Log each activity
+        const activityDate = new Date(activity.ACTIVITY_DATE);
+        const co2Emission = activity.CO2_EMISSION;
+        const currentMonth = currentDate.getMonth();
+        const activityMonth = activityDate.getMonth();
+
+        if (activityMonth === currentMonth) {
+          const weekOfMonth = Math.floor(activityDate.getDate() / 7);
+          co2Emissions[weekOfMonth] += co2Emission;
+        }
+      });
+    } else if (yourTrendsPeriod === 'Quarter') {
+      labels = ['Month 1', 'Month 2', 'Month 3'];
+      co2Emissions = [0, 0, 0];
+      const currentDate = new Date();
+      const currentQuarter = Math.floor(currentDate.getMonth() / 3);
+
+      userActivities.forEach((activity) => {
+        console.log("Processing Activity for Quarter:", activity); // Log each activity
+        const activityDate = new Date(activity.ACTIVITY_DATE);
+        const co2Emission = activity.CO2_EMISSION;
+        const activityQuarter = Math.floor(activityDate.getMonth() / 3);
+
+        if (activityQuarter === currentQuarter) {
+          const monthInQuarter = activityDate.getMonth() % 3;
+          co2Emissions[monthInQuarter] += co2Emission;
+        }
+      });
+    } else if (yourTrendsPeriod === 'Year') {
+      labels = ['Q1', 'Q2', 'Q3', 'Q4'];
+      co2Emissions = [0, 0, 0, 0];
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+
+      userActivities.forEach((activity) => {
+        console.log("Processing Activity for Year:", activity); // Log each activity
+        const activityDate = new Date(activity.ACTIVITY_DATE);
+        const co2Emission = activity.CO2_EMISSION;
+        const activityYear = activityDate.getFullYear();
+
+        if (activityYear === currentYear) {
+          const quarter = Math.floor(activityDate.getMonth() / 3);
+          co2Emissions[quarter] += co2Emission;
+        }
+      });
+    }
+
+    console.log("Final CO2 Emissions:", co2Emissions); // Log the final data for debugging
 
     return {
       labels,
       datasets: [
         {
-          label: 'Your Trends (Weekly)',
-          data: co2EmissionsByWeek,
+          label: `Your Trends (${yourTrendsPeriod})`,
+          data: co2Emissions,
           borderColor: '#82ca9d',
           borderWidth: 2,
           fill: false,
@@ -167,6 +250,15 @@ const Dashboard = () => {
               <MenuItem value="Energy Consumption">Energy Consumption</MenuItem>
             </Select>
           </FormControl>
+        </Box>
+
+        {/* Debugging Information */}
+        <Box sx={{ backgroundColor: 'rgba(240, 240, 240, 0.9)', padding: 2, marginTop: 2, borderRadius: 1 }}>
+          <Typography variant="h6">Debug Info - Fetched Activities</Typography>
+          <pre>{JSON.stringify(userActivities, null, 2)}</pre> {/* Display fetched activities */}
+          
+          <Typography variant="h6" sx={{ marginTop: 2 }}>Debug Info - Processed CO2 Emissions</Typography>
+          <pre>{JSON.stringify(getDynamicYourTrendsData(), null, 2)}</pre> {/* Display processed chart data */}
         </Box>
       </Container>
 
