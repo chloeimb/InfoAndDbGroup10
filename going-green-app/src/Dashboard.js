@@ -147,7 +147,6 @@ const Dashboard = () => {
       });
     }
   
-    console.log("Final CO2 Emissions:", co2Emissions); // Log the final data for debugging
   
     return {
       labels,
@@ -250,15 +249,6 @@ const Dashboard = () => {
               <MenuItem value="Energy Consumption">Energy Consumption</MenuItem>
             </Select>
           </FormControl>
-        </Box>
-
-        {/* Debugging Information */}
-        <Box sx={{ backgroundColor: 'rgba(240, 240, 240, 0.9)', padding: 2, marginTop: 2, borderRadius: 1 }}>
-          <Typography variant="h6">Debug Info - Fetched Activities</Typography>
-          <pre>{JSON.stringify(userActivities, null, 2)}</pre> {/* Display fetched activities */}
-          
-          <Typography variant="h6" sx={{ marginTop: 2 }}>Debug Info - Processed CO2 Emissions</Typography>
-          <pre>{JSON.stringify(getDynamicYourTrendsData(), null, 2)}</pre> {/* Display processed chart data */}
         </Box>
       </Container>
 
