@@ -13,9 +13,8 @@ const LogActivity = () => {
   const [time, setTime] = useState('');
   const [loads, setLoads] = useState('');
   // default set timeofday to morning
-  const [timeofDay, setTimeofDay] = useState('morning');
   // group the activities under morning, afternoon, and evening
-  const [activities, setActivities] = useState({ morning: [], afternoon: [], evening: [] });
+  const [activities, setActivities] = useState([]);
 
   // adding time of day
   const handleActivityChange = (event) => {
@@ -33,31 +32,52 @@ const LogActivity = () => {
     setTime(event.target.value);
   };
 
-  const handleTimeofDayChange = (event) => {
-    setTimeofDay(event.target.value)
-  }
-  const logActivity = () => {
-    
-    const co2Emission = calculateCO2Emission(activityType, distance, time, loads);
-
-    // add new activiites including the previous activities under the same section
-    setActivities((prevActivities) => ({
-      ...prevActivities,
-      [timeofDay]: [
-        ...prevActivities[timeofDay],
-        {activityType, distance, time, loads, co2Emission}
-      ]
-    }))
-    // Clear the fields after logging
-    setActivityType('');
-    setDistance('');
-    setTime('');
+  const logActivity = async () => {
+    const co2Emission = calculateCO2Emission(activityType, distance, time);
+  
+    // Assuming you have a userId from your authentication context or stored globally
+    const userId = 1; // Replace this with the actual user ID from your authentication
+  
+    try {
+      const response = await fetch('http://localhost:3000/log-activity', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          activityType,
+          distance,
+          time,
+          co2Emission,
+        }),
+      });
+  
+      if (response.ok) {
+        // Successfully logged in the database
+        setActivities([
+          ...activities,
+          {
+            activityType,
+            distance,
+            time,
+            co2Emission,
+          },
+        ]);
+  
+        // Clear the fields after logging
+        setActivityType('');
+        setDistance('');
+        setTime('');
+      } else {
+        const errorData = await response.json();
+        console.error('Error logging activity:', errorData.message);
+      }
+    } catch (error) {
+      console.error('Error making request:', error);
+    }
   };
-
-  const isButtonDisabled =
-  !activityType || !timeofDay || (activityType === 'driving' && !distance) || 
-  (activityType === 'walking' && !time) || 
-  (activityType === 'laundry' && !loads);
+  
 
   return (
     <div

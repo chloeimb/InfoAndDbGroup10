@@ -104,6 +104,42 @@ app.post('/signin', async (req, res) => {
   }
 });
 
+// Route to log user activities
+app.post('/log-activity', async (req, res) => {
+  const { userId, activityType, distance, time, co2Emission } = req.body;
+
+  try {
+    // Insert the new activity into the USER_ACTIVITIES table
+    const insertActivity = await db.executeQuery(
+      'INSERT INTO USER_ACTIVITIES (USER_ID, ACTIVITY_TYPE, DISTANCE, TIME, CO2_EMISSION) VALUES (:userId, :activityType, :distance, :time, :co2Emission)',
+      [userId, activityType, distance, time, co2Emission]
+    );
+
+    res.status(201).json({ message: 'Activity logged successfully' });
+  } catch (error) {
+    console.error('Error logging activity:', error);
+    res.status(500).json({ message: 'Error logging activity', error });
+  }
+});
+
+// Route to fetch user activities
+app.get('/user-activities', async (req, res) => {
+  const { userId } = req.query; // Get the userId from the query parameters
+
+  try {
+    // Fetch activities for the specific user
+    const result = await db.executeQuery('SELECT ACTIVITY_TYPE, DISTANCE, TIME, CO2_EMISSION FROM USER_ACTIVITIES WHERE USER_ID = :userId', [userId]);
+    
+    // Send the activities to the frontend
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching user activities:', error);
+    res.status(500).json({ message: 'Error fetching user activities' });
+  }
+});
+
+
+
 // Start the server
 app.listen(port, async () => {
   console.log(`Server running on http://localhost:${port}`);
