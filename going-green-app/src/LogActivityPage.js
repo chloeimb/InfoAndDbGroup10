@@ -7,7 +7,7 @@ import backgroundImage from './images/logactivityimage.png'; // Adjust this path
 const LogActivity = () => {
   const [activityType, setActivityType] = useState('');
   const [gallons, setGallons] = useState('');
-  const [time, setTime] = useState('');
+  const [hours, setHours] = useState('');
   const [activities, setActivities] = useState([]);
 
   const handleActivityChange = (event) => {
@@ -18,12 +18,12 @@ const LogActivity = () => {
     setGallons(event.target.value);
   };
 
-  const handleTimeChange = (event) => {
-    setTime(event.target.value);
+  const handleHoursChange = (event) => {
+    setHours(event.target.value);
   };
 
   const logActivity = async () => {
-    const co2Emission = calculateCO2Emission(activityType, gallons, time);
+    const co2Emission = calculateCO2Emission(activityType, gallons, hours);
   
     // Assuming you have a userId from your authentication context or stored globally
     const userId = 1; // Replace this with the actual user ID from your authentication
@@ -38,7 +38,7 @@ const LogActivity = () => {
           userId,
           activityType,
           gallons,
-          time,
+          hours,
           co2Emission,
         }),
       });
@@ -50,7 +50,7 @@ const LogActivity = () => {
           {
             activityType,
             gallons,
-            time,
+            hours,
             co2Emission,
           },
         ]);
@@ -58,7 +58,7 @@ const LogActivity = () => {
         // Clear the fields after logging
         setActivityType('');
         setGallons('');
-        setTime('');
+        setHours('');
       } else {
         const errorData = await response.json();
         console.error('Error logging activity:', errorData.message);
@@ -97,8 +97,7 @@ const LogActivity = () => {
           margin="normal"
         >
           <MenuItem value="driving">Driving Gas Car</MenuItem>
-          <MenuItem value="walking">Walking</MenuItem>
-          <MenuItem value="biking">Biking</MenuItem>
+          <MenuItem value="electricity">Electricity Used</MenuItem>
         </TextField>
 
         {activityType === 'driving' && (
@@ -112,23 +111,12 @@ const LogActivity = () => {
           />
         )}
 
-        {activityType === 'walking' && (
+        {activityType === 'electricity' && (
           <TextField
-            label="Time (minutes)"
+            label="Hours"
             type="number"
-            value={time}
-            onChange={handleTimeChange}
-            fullWidth
-            margin="normal"
-          />
-        )}
-
-        {activityType === 'biking' && (
-          <TextField
-            label="Distance (miles)"
-            type="number"
-            value={distance}
-            onChange={handleDistanceChange}
+            value={hours}
+            onChange={handleHoursChange}
             fullWidth
             margin="normal"
           />
@@ -174,19 +162,18 @@ const LogActivity = () => {
 };
 
 // CO2 emission calculation logic
-const calculateCO2Emission = (activityType, distance, time) => {
+const calculateCO2Emission = (activityType, gallons, hours) => {
   let co2Emission = 0;
 
   //https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references
 
   // 8,887 grams of CO2/gallon of gasoline = 8.887 × 10-3 metric tons CO2/gallon of gasoline
   if (activityType === 'driving') {
-    co2Emission = distance * 0.404; // 0.404 kg CO2 per mile driven
-  } else if (activityType === 'walking') {
-    co2Emission = (time / 30) * 0.06; // 0.06 kg CO2 per 30 minutes walking
-  } else if (activityType === 'biking') {
-    co2Emission = distance * 0.05; // 0.05 kg CO2 per mile biking
-  }
+    co2Emission = 8887 * gallons; 
+    //852.3 lbs CO2/MWh × 1 metric ton/2,204.6 lbs × 1/(1-0.073) MWh delivered/MWh generated × 1 MWh/1,000 kWh = 4.17 × 10-4 metric tons CO2/kWh
+  } else if (activityType === 'electricity') {
+    co2Emission = 0.000417 * hours;
+  } 
 
   return co2Emission.toFixed(2); // Return result with 2 decimal places
 };
