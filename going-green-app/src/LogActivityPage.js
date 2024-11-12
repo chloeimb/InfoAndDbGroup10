@@ -172,7 +172,7 @@ const calculateCO2Emission = (activityType, gallons, hours) => {
     co2Emission = 8887 * gallons; 
     //852.3 lbs CO2/MWh × 1 metric ton/2,204.6 lbs × 1/(1-0.073) MWh delivered/MWh generated × 1 MWh/1,000 kWh = 4.17 × 10-4 metric tons CO2/kWh
   } else if (activityType === 'electricity') {
-    co2Emission = 0.000417 * hours;
+    co2Emission = (0.000417 * hours) * 453.592; // times 453.592 to do lb to gram conversion
   } 
 
   return co2Emission.toFixed(2); // Return result with 2 decimal places
