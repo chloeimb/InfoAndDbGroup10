@@ -6,7 +6,7 @@ import backgroundImage from './images/logactivityimage.png'; // Adjust this path
 
 const LogActivity = () => {
   const [activityType, setActivityType] = useState('');
-  const [distance, setDistance] = useState('');
+  const [gallons, setGallons] = useState('');
   const [time, setTime] = useState('');
   const [activities, setActivities] = useState([]);
 
@@ -14,8 +14,8 @@ const LogActivity = () => {
     setActivityType(event.target.value);
   };
 
-  const handleDistanceChange = (event) => {
-    setDistance(event.target.value);
+  const handleGallonsChange = (event) => {
+    setGallons(event.target.value);
   };
 
   const handleTimeChange = (event) => {
@@ -23,7 +23,7 @@ const LogActivity = () => {
   };
 
   const logActivity = async () => {
-    const co2Emission = calculateCO2Emission(activityType, distance, time);
+    const co2Emission = calculateCO2Emission(activityType, gallons, time);
   
     // Assuming you have a userId from your authentication context or stored globally
     const userId = 1; // Replace this with the actual user ID from your authentication
@@ -37,7 +37,7 @@ const LogActivity = () => {
         body: JSON.stringify({
           userId,
           activityType,
-          distance,
+          gallons,
           time,
           co2Emission,
         }),
@@ -49,7 +49,7 @@ const LogActivity = () => {
           ...activities,
           {
             activityType,
-            distance,
+            gallons,
             time,
             co2Emission,
           },
@@ -57,7 +57,7 @@ const LogActivity = () => {
   
         // Clear the fields after logging
         setActivityType('');
-        setDistance('');
+        setGallons('');
         setTime('');
       } else {
         const errorData = await response.json();
@@ -96,17 +96,17 @@ const LogActivity = () => {
           fullWidth
           margin="normal"
         >
-          <MenuItem value="driving">Driving</MenuItem>
+          <MenuItem value="driving">Driving Gas Car</MenuItem>
           <MenuItem value="walking">Walking</MenuItem>
           <MenuItem value="biking">Biking</MenuItem>
         </TextField>
 
         {activityType === 'driving' && (
           <TextField
-            label="Distance (miles)"
+            label="Gallons"
             type="number"
-            value={distance}
-            onChange={handleDistanceChange}
+            value={gallons}
+            onChange={handleGallonsChange}
             fullWidth
             margin="normal"
           />
@@ -150,7 +150,7 @@ const LogActivity = () => {
         <ul>
           {activities.map((activity, index) => (
             <li key={index}>
-              {activity.activityType} - CO2 Emission: {activity.co2Emission} kg
+              {activity.activityType} - CO2 Emission: {activity.co2Emission} g
             </li>
           ))}
         </ul>
@@ -177,6 +177,9 @@ const LogActivity = () => {
 const calculateCO2Emission = (activityType, distance, time) => {
   let co2Emission = 0;
 
+  //https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references
+
+  // 8,887 grams of CO2/gallon of gasoline = 8.887 × 10-3 metric tons CO2/gallon of gasoline
   if (activityType === 'driving') {
     co2Emission = distance * 0.404; // 0.404 kg CO2 per mile driven
   } else if (activityType === 'walking') {
