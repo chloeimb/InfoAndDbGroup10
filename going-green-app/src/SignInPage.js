@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box } from '@mui/material';
 import backgroundImage from './images/signinimage.png'; // Adjust this path
 
-function Signin({ setIsAuthenticated }) {
+function Signin({ setIsAuthenticated, setIsAdmin, setUserId }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate(); // To navigate to the dashboard
@@ -11,21 +11,30 @@ function Signin({ setIsAuthenticated }) {
   const handleSignin = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('http://localhost:3000/signin', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch('http://localhost:3000/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await response.json();
-    if (response.ok) {
-      localStorage.setItem('token', data.token); // Store the token for future use
-      setIsAuthenticated(true); // Update the state to indicate the user is logged in
-      navigate('/dashboard'); // Redirect to the dashboard
-    } else {
-      alert('Error: ' + data.message);
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem('token', data.token); // Store the token for future use
+        setIsAuthenticated(true); // Update the state to indicate the user is logged in
+        setUserId(data.userId); // Set the user ID
+        setIsAdmin(data.isAdmin === 1 || data.isAdmin === true); // Set isAdmin status
+
+        // Redirect to the dashboard
+        navigate('/dashboard');
+      } else {
+        alert('Error: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error during sign-in:', error);
+      alert('An error occurred during sign-in.');
     }
   };
 
