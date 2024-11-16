@@ -121,26 +121,34 @@ const AdminDashboard = ({ userId }) => {
           </TableHead>
           <TableBody>
             {users.map((user, index) => {
-              const userId = user[0];
+              const userIdInRow = user[0];
               const email = user[1];
               const isAdmin = user[2] === 1;
+
+              // Convert IDs to numbers for accurate comparison
+              const loggedInUserId = Number(userId);
+              const currentUserIdInRow = Number(userIdInRow);
+
+              // Debugging logs
+              console.log(`Logged-in User ID: ${loggedInUserId}, Row User ID: ${currentUserIdInRow}`);
+
               return (
                 <TableRow key={index}>
-                  <TableCell>{userId}</TableCell>
+                  <TableCell>{userIdInRow}</TableCell>
                   <TableCell>{email}</TableCell>
                   <TableCell>
                     <Switch
                       checked={isAdmin}
-                      onChange={() => toggleAdminStatus(userId, isAdmin)}
+                      onChange={() => toggleAdminStatus(userIdInRow, isAdmin)}
                       color="primary"
-                      disabled={userId === parseInt(userId)} // Prevent admin from changing their own status
+                      disabled={currentUserIdInRow === loggedInUserId} // Prevent admin from changing their own status
                     />
                   </TableCell>
                   <TableCell>
                     <IconButton onClick={() => openEditDialog(user)} color="primary">
                       <EditIcon />
                     </IconButton>
-                    <IconButton onClick={() => deleteUser(userId)} color="secondary">
+                    <IconButton onClick={() => deleteUser(userIdInRow)} color="secondary">
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>
