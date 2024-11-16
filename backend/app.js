@@ -36,6 +36,56 @@ app.get('/users', authenticateAdmin, async (req, res) => {
   }
 });
 
+// app.js
+
+// Route to delete a user (Admin only)
+app.delete('/users/:id', authenticateAdmin, async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    await db.executeQuery('DELETE FROM users WHERE USER_ID = :userId', [userId]);
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Error deleting user' });
+  }
+});
+
+// app.js
+
+// Route to update a user's isAdmin status (Admin only)
+app.put('/users/:id/admin-status', authenticateAdmin, async (req, res) => {
+  const userId = req.params.id;
+  const { isAdmin } = req.body;
+
+  try {
+    await db.executeQuery('UPDATE users SET IS_ADMIN = :isAdmin WHERE USER_ID = :userId', [isAdmin ? 1 : 0, userId]);
+    res.json({ message: 'User admin status updated successfully' });
+  } catch (error) {
+    console.error('Error updating user admin status:', error);
+    res.status(500).json({ message: 'Error updating user admin status' });
+  }
+});
+
+// app.js
+
+// Route to update a user's email (Admin only)
+app.put('/users/:id/email', authenticateAdmin, async (req, res) => {
+  const userId = req.params.id;
+  const { email } = req.body;
+
+  try {
+    await db.executeQuery('UPDATE users SET EMAIL = :email WHERE USER_ID = :userId', [email, userId]);
+    res.json({ message: 'User email updated successfully' });
+  } catch (error) {
+    console.error('Error updating user email:', error);
+    res.status(500).json({ message: 'Error updating user email' });
+  }
+});
+
+
+
+
 // Route to handle user sign-up
 app.post('/signup', async (req, res) => {
   const { email, password, isAdmin } = req.body;
