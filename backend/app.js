@@ -194,6 +194,62 @@ app.get('/user-activities', async (req, res) => {
   }
 });
 
+// app.js
+
+// Route to add a new article (Admin only)
+app.post('/articles', authenticateAdmin, async (req, res) => {
+  const { title, content, imageUrl, articleUrl } = req.body;
+
+  try {
+    await db.executeQuery(
+      'INSERT INTO articles (title, content, image_url, article_url) VALUES (:title, :content, :imageUrl, :articleUrl)',
+      [title, content, imageUrl, articleUrl]
+    );
+    res.status(201).json({ message: 'Article added successfully' });
+  } catch (error) {
+    console.error('Error adding article:', error);
+    res.status(500).json({ message: 'Error adding article' });
+  }
+});
+
+
+// Route to fetch all articles (Public)
+app.get('/articles', async (req, res) => {
+  try {
+    const result = await db.executeQuery(
+      'SELECT ARTICLE_ID, TITLE, CONTENT, IMAGE_URL, ARTICLE_URL, CREATED_AT FROM articles ORDER BY CREATED_AT DESC'
+    );
+    // Map the result to an array of objects with named properties
+    const articles = result.rows.map((row) => ({
+      articleId: row[0],
+      title: row[1],
+      content: row[2],
+      imageUrl: row[3],
+      articleUrl: row[4],
+      createdAt: row[5],
+    }));
+    res.json(articles);
+  } catch (error) {
+    console.error('Error fetching articles:', error);
+    res.status(500).json({ message: 'Error fetching articles' });
+  }
+});
+
+
+// Route to delete an article (Admin only)
+app.delete('/articles/:id', authenticateAdmin, async (req, res) => {
+  const articleId = req.params.id;
+
+  try {
+    await db.executeQuery('DELETE FROM articles WHERE ARTICLE_ID = :articleId', [articleId]);
+    res.json({ message: 'Article deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting article:', error);
+    res.status(500).json({ message: 'Error deleting article' });
+  }
+});
+
+
 // Start the server
 app.listen(port, async () => {
   console.log(`Server running on http://localhost:${port}`);

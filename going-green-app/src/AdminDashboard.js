@@ -3,11 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button,
-  Switch, IconButton, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
+  Switch, IconButton, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+  Button, Typography, Container,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import AddArticle from './AddArticle'; // Import the AddArticle component
 
 const AdminDashboard = ({ userId }) => {
   const [users, setUsers] = useState([]);
@@ -15,10 +17,13 @@ const AdminDashboard = ({ userId }) => {
   const [openDialog, setOpenDialog] = useState(false); // For edit dialog
   const [newEmail, setNewEmail] = useState(''); // New email input
 
+  const [customArticles, setCustomArticles] = useState([]); // State for custom articles
+
   const token = localStorage.getItem('token');
 
   useEffect(() => {
     fetchUsers();
+    fetchCustomArticles(); // Fetch custom articles when the component mounts
   }, []);
 
   // Fetch all users
@@ -32,6 +37,16 @@ const AdminDashboard = ({ userId }) => {
       setUsers(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
+    }
+  };
+
+  // Fetch custom articles
+  const fetchCustomArticles = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/articles');
+      setCustomArticles(response.data);
+    } catch (error) {
+      console.error('Error fetching custom articles:', error);
     }
   };
 
@@ -105,11 +120,34 @@ const AdminDashboard = ({ userId }) => {
     }
   };
 
+  // Delete an article
+  const deleteArticle = async (id) => {
+    if (window.confirm('Are you sure you want to delete this article?')) {
+      try {
+        await axios.delete(`http://localhost:3000/articles/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // Refresh article list
+        fetchCustomArticles();
+      } catch (error) {
+        console.error('Error deleting article:', error);
+      }
+    }
+  };
+
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Admin Dashboard</h1>
-      <h2>All Users:</h2>
-      <TableContainer component={Paper}>
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        Admin Dashboard
+      </Typography>
+
+      {/* User Management Section */}
+      <Typography variant="h5" gutterBottom>
+        User Management
+      </Typography>
+      <TableContainer component={Paper} sx={{ mb: 4 }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -130,7 +168,7 @@ const AdminDashboard = ({ userId }) => {
               const currentUserIdInRow = Number(userIdInRow);
 
               // Debugging logs
-              console.log(`Logged-in User ID: ${loggedInUserId}, Row User ID: ${currentUserIdInRow}`);
+              // console.log(`Logged-in User ID: ${loggedInUserId}, Row User ID: ${currentUserIdInRow}`);
 
               return (
                 <TableRow key={index}>
@@ -185,7 +223,45 @@ const AdminDashboard = ({ userId }) => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+
+      {/* Add Article Section */}
+      <Typography variant="h5" gutterBottom>
+        Add New Article
+      </Typography>
+      <AddArticle onArticleAdded={fetchCustomArticles} /> {/* Pass a prop to refresh articles after adding */}
+
+      {/* Manage Articles Section */}
+      <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
+        Manage Articles
+      </Typography>
+      <TableContainer component={Paper} sx={{ mb: 4 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Article ID</TableCell>
+              <TableCell>Title</TableCell>
+              <TableCell>Created At</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {customArticles.map((article) => (
+              <TableRow key={article.articleId}>
+                <TableCell>{article.articleId}</TableCell>
+                <TableCell>{article.title}</TableCell>
+                <TableCell>{new Date(article.createdAt).toLocaleString()}</TableCell>
+                <TableCell>
+                  {/* Add Edit functionality if needed */}
+                  <IconButton onClick={() => deleteArticle(article.articleId)} color="secondary">
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Container>
   );
 };
 

@@ -1,20 +1,39 @@
+// Articles.js
+
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Grid, Card, CardContent, CardMedia, CardActions, Button, Box } from '@mui/material';
+import {
+  Container, Typography, Grid, Card, CardContent, CardMedia, CardActions, Button,
+} from '@mui/material';
 import BottomNav from './BottomNav'; // Import your BottomNav component
 
 const Articles = () => {
   const [articles, setArticles] = useState([]);
-  const apiKey = '7bd1015d51de4db7ad11a5aaca5925f8'; // Your NewsAPI key
+  const apiKey = 'YOUR_NEWSAPI_KEY'; // Replace with your actual NewsAPI key
 
-  // Function to fetch eco-related news articles from NewsAPI
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await fetch(
+        // Fetch custom articles from your backend
+        const customArticlesResponse = await fetch('http://localhost:3000/articles');
+        const customArticles = await customArticlesResponse.json();
+
+        // Fetch articles from NewsAPI
+        const newsApiResponse = await fetch(
           `https://newsapi.org/v2/everything?q=environment OR climate OR sustainability OR "eco-friendly"&language=en&apiKey=${apiKey}`
         );
-        const data = await response.json();
-        setArticles(data.articles); // Assuming the response contains an array of articles
+        const newsApiData = await newsApiResponse.json();
+
+        // Combine custom articles with NewsAPI articles
+        const combinedArticles = [...customArticles, ...newsApiData.articles];
+
+        // Sort articles by date (assuming both have a 'createdAt' or 'publishedAt' field)
+        combinedArticles.sort((a, b) => {
+          const dateA = new Date(a.createdAt || a.publishedAt);
+          const dateB = new Date(b.createdAt || b.publishedAt);
+          return dateB - dateA; // Descending order
+        });
+
+        setArticles(combinedArticles);
       } catch (error) {
         console.error('Error fetching articles:', error);
       }
@@ -49,11 +68,11 @@ const Articles = () => {
                   },
                 }}
               >
-                {article.urlToImage && (
+                {(article.imageUrl || article.urlToImage) && (
                   <CardMedia
                     component="img"
                     height="200"
-                    image={article.urlToImage}
+                    image={article.imageUrl || article.urlToImage}
                     alt={article.title}
                   />
                 )}
@@ -62,19 +81,21 @@ const Articles = () => {
                     {article.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {article.description ? article.description : 'No description available'}
+                    {article.content || article.description || 'No description available'}
                   </Typography>
                 </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    href={article.url}
-                    target="_blank"
-                    sx={{ color: '#1976d2' }}
-                  >
-                    Read More
-                  </Button>
-                </CardActions>
+                {(article.articleUrl || article.url) && (
+                  <CardActions>
+                    <Button
+                      size="small"
+                      href={article.articleUrl || article.url}
+                      target="_blank"
+                      sx={{ color: '#1976d2' }}
+                    >
+                      Read More
+                    </Button>
+                  </CardActions>
+                )}
               </Card>
             </Grid>
           ))}
