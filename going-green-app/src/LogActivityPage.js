@@ -96,11 +96,14 @@ const LogActivity = () => {
           fullWidth
           margin="normal"
         >
-          <MenuItem value="driving">Driving Gas Car</MenuItem>
+          <MenuItem value="driving-gas">Driving Gas Car</MenuItem>
+          <MenuItem value="driving-electric">Driving Electric Car</MenuItem>
           <MenuItem value="electricity">Electricity Used</MenuItem>
+          <MenuItem value="meat-consumption">Meat Consumption</MenuItem>
+          <MenuItem value="water">Water Usage</MenuItem>
         </TextField>
 
-        {activityType === 'driving' && (
+        {activityType === 'driving-gas' && (
           <TextField
             label="Gallons"
             type="number"
@@ -165,15 +168,24 @@ const LogActivity = () => {
 const calculateCO2Emission = (activityType, gallons, hours) => {
   let co2Emission = 0;
 
-  //https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references
+  // https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references
 
   // 8,887 grams of CO2/gallon of gasoline = 8.887 × 10-3 metric tons CO2/gallon of gasoline
-  if (activityType === 'driving') {
+  if (activityType === 'driving-gas') {
     co2Emission = 8887 * gallons; 
-    //852.3 lbs CO2/MWh × 1 metric ton/2,204.6 lbs × 1/(1-0.073) MWh delivered/MWh generated × 1 MWh/1,000 kWh = 4.17 × 10-4 metric tons CO2/kWh
+    // 852.3 lbs CO2/MWh × 1 metric ton/2,204.6 lbs × 1/(1-0.073) MWh delivered/MWh generated × 1 MWh/1,000 kWh = 4.17 × 10-4 metric tons CO2/kWh
+  } else if (activityType === 'driving-electric') {
+    co2Emission = 0 * gallons;
+    // 823.1 lbs CO2e/MWh × 10,917 VMT car/truck average × 1/3.60 miles per kWh all EVs average x 0.001 MWh/kWh x 1 metric ton/2,204.6 lbs = 1.13 metric tons CO2e/vehicle/year
   } else if (activityType === 'electricity') {
     co2Emission = (0.000417 * hours) * 453.592; // times 453.592 to do lb to gram conversion
-  } 
+
+  } else if (activityType === 'meat-consumption') {
+    co2Emission = (0.000417 * hours) * 453.592; // meat consumption conversion (home-cooked, restaurants)
+
+  } else if (activityType === 'water') {
+    co2Emission = (0.000417 * hours) * 453.592; // water waste conversion (showering, washing hands)
+  }
 
   return co2Emission.toFixed(2); // Return result with 2 decimal places
 };
