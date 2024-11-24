@@ -96,14 +96,17 @@ const LogActivity = () => {
           fullWidth
           margin="normal"
         >
-          <MenuItem value="driving-gas">Driving Gas Car</MenuItem>
-          <MenuItem value="driving-electric">Driving Electric Car</MenuItem>
+          <MenuItem value="driving">Driving (Gas Car)</MenuItem>
+          <MenuItem value="biking">Biking</MenuItem>
           <MenuItem value="electricity">Electricity Used</MenuItem>
-          <MenuItem value="meat-consumption">Meat Consumption</MenuItem>
-          <MenuItem value="water">Water Usage</MenuItem>
+          <MenuItem value="phone">Phone Usage</MenuItem>
+          <MenuItem value="airplane">Airplane Flights</MenuItem>
+          <MenuItem value="water">Water Usage (Hot Showers)</MenuItem>
+          <MenuItem value="train">Train</MenuItem>
+          <MenuItem value="heating-unit">Heating (Inside Home)</MenuItem>
         </TextField>
 
-        {activityType === 'driving-gas' && (
+        {activityType === 'driving' && (
           <TextField
             label="Gallons"
             type="number"
@@ -114,7 +117,73 @@ const LogActivity = () => {
           />
         )}
 
+        {activityType === 'biking' && (
+          <TextField
+            label="Hours"
+            type="number"
+            value={hours}
+            onChange={handleHoursChange}
+            fullWidth
+            margin="normal"
+          />
+        )}
+
         {activityType === 'electricity' && (
+          <TextField
+            label="Hours"
+            type="number"
+            value={hours}
+            onChange={handleHoursChange}
+            fullWidth
+            margin="normal"
+          />
+        )}
+
+        {activityType === 'phone' && (
+          <TextField
+            label="Hours"
+            type="number"
+            value={hours}
+            onChange={handleHoursChange}
+            fullWidth
+            margin="normal"
+          />
+        )}
+
+        {activityType === 'airplane' && (
+          <TextField
+            label="Hours"
+            type="number"
+            value={hours}
+            onChange={handleHoursChange}
+            fullWidth
+            margin="normal"
+          />
+        )}
+
+        {activityType === 'water' && (
+          <TextField
+            label="Hours"
+            type="number"
+            value={hours}
+            onChange={handleHoursChange}
+            fullWidth
+            margin="normal"
+          />
+        )}
+
+        {activityType === 'train' && (
+          <TextField
+            label="Hours"
+            type="number"
+            value={hours}
+            onChange={handleHoursChange}
+            fullWidth
+            margin="normal"
+          />
+        )}
+
+        {activityType === 'heating' && (
           <TextField
             label="Hours"
             type="number"
@@ -168,23 +237,32 @@ const LogActivity = () => {
 const calculateCO2Emission = (activityType, gallons, hours) => {
   let co2Emission = 0;
 
-  // https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references
+  //https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references
 
   // 8,887 grams of CO2/gallon of gasoline = 8.887 × 10-3 metric tons CO2/gallon of gasoline
-  if (activityType === 'driving-gas') {
+  if (activityType === 'driving') {
     co2Emission = 8887 * gallons; 
-    // 852.3 lbs CO2/MWh × 1 metric ton/2,204.6 lbs × 1/(1-0.073) MWh delivered/MWh generated × 1 MWh/1,000 kWh = 4.17 × 10-4 metric tons CO2/kWh
-  } else if (activityType === 'driving-electric') {
-    co2Emission = 0 * gallons;
-    // 823.1 lbs CO2e/MWh × 10,917 VMT car/truck average × 1/3.60 miles per kWh all EVs average x 0.001 MWh/kWh x 1 metric ton/2,204.6 lbs = 1.13 metric tons CO2e/vehicle/year
+    //852.3 lbs CO2/MWh × 1 metric ton/2,204.6 lbs × 1/(1-0.073) MWh delivered/MWh generated × 1 MWh/1,000 kWh = 4.17 × 10-4 metric tons CO2/kWh
+  } else if (activityType === 'biking') {
+    co2Emission = (0) * hours;
+    // Need to check this one again 
   } else if (activityType === 'electricity') {
     co2Emission = (0.000417 * hours) * 453.592; // times 453.592 to do lb to gram conversion
-
-  } else if (activityType === 'meat-consumption') {
-    co2Emission = (0.000417 * hours) * 453.592; // meat consumption conversion (home-cooked, restaurants)
-
+  } else if (activityType === 'phone') {
+    co2Emission = (172) * hours;
+    // 172 g CO2/hr
+  } else if (activityType === 'airplane') {
+    co2Emission = (32000) * hours;
+    // 40 kg CO2/1h 15min --> 32 kg CO2/hr
   } else if (activityType === 'water') {
-    co2Emission = (0.000417 * hours) * 453.592; // water waste conversion (showering, washing hands)
+    co2Emission = (12000) * hours;
+    // 2,000 g CO2/10 min --> 12,000 g CO2/hr
+  } else if (activityType === 'train') {
+    co2Emission = (7556) * hours;
+    // 17 kg CO2/2 hr 15 min --> 7.556 kg CO2/hr
+  } else if (activityType === 'heating') {
+    co2Emission = (7000) * hours;
+    // 7,000 g CO2/hr (one house)
   }
 
   return co2Emission.toFixed(2); // Return result with 2 decimal places
