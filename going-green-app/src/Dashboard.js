@@ -34,6 +34,11 @@ const chartOptions = {
 };
 
 const Dashboard = () => {
+  // US Chart states
+  const [selectedUSData, setSelectedUSData] = useState('Total CO2 Emissions')
+  const [cachedData, setCachedData] = useState({});
+  const [chartData, setChartData] = useState([]);
+  // User chart states
   const [yourTrendsPeriod, setYourTrendsPeriod] = useState('Week');
   const [measurement, setMeasurement] = useState('CO2 Emissions');
   const [userActivities, setUserActivities] = useState([]); // State to store user activities
@@ -63,10 +68,63 @@ const Dashboard = () => {
         console.error('Error fetching user activities:', error);
       }
     };
-    
-
     fetchUserActivities();
   }, []);
+
+  // Fetch us data when component mounts
+  useEffect(() => {
+    const fetchUSData = async () => {
+      try {
+        if (cachedData[selectedUSData]) {
+          setChartData(cachedData[selectedUSData]); 
+          return;
+      }
+    
+    let response;
+    switch (selectedUSData) {
+      // will get total co2 emissions from NEI and EGRID per state divided by pop. capita
+      case "Total CO2 Emissions":
+        response = await axios.get("http://localhost:3000/us-co2-data");
+        break;
+      // will get energy co2 emissions from EGRID per state divided by pop. capita
+      case "Energy CO2 Emissions":
+        response = await axios.get("http://localhost:3000/us-energy-data");
+        break;
+
+      // will get transporation co2 emissions from NEI per state divided by pop. capita
+      case "Transporation CO2 Emissions":
+        response = await axios.get("http://localhost:3000/us-transporation-data");
+        break;
+    }
+    const responseData = response.data;
+
+    setCachedData((prev) => ({ ...prev, [selectedUSData]: responseData }));
+    setChartData(responseData);
+    console.log("chart data", chartData);
+  }
+  catch(error){}
+  }; fetchUSData();}, [selectedUSData]); 
+
+  const getDynamicUSData = () => {
+    if (!chartData || chartData.length === 0) return { worldTrendsData };
+
+    const labels = chartData.map((item) => item.STATE);
+    const emissions = chartData.map((item) => item.EMISSIONS_PER_CAPITA);
+    const label = selectedUSData;
+
+    return {
+      labels, 
+      datasets: [
+        {
+          label,
+          data: emissions,
+          borderColor: '#8884d8',
+          borderWidth: 2,
+          fill: false,
+        }
+      ]
+    };
+  };
 
   const getDynamicYourTrendsData = () => {
     let labels = [];
@@ -162,12 +220,14 @@ const Dashboard = () => {
     };
   };
   
-
   // Get the dynamic data for the chart
   const getYourTrendsData = () => {
     return getDynamicYourTrendsData();
   };
 
+  const getUSData = () => {
+    getDynamicUSData();
+  }
   return (
     <div
       style={{
@@ -190,18 +250,22 @@ const Dashboard = () => {
 
         {/* Grid for Side-by-Side Charts */}
         <Grid container spacing={2}>
-          {/* World Trends Section */}
+          {/* US Trends Section */}
           <Grid item xs={12} md={6}>
             <Box component={Paper} elevation={3} sx={{ padding: 2, backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
               <Typography variant="h5" gutterBottom>
-                World Trends
+                US CO2 Emissions
               </Typography>
-              <Line data={worldTrendsData} options={chartOptions} height={200} />
+              {/* <Line data={getUSData()} options={chartOptions} height={200} /> */}
+              {chartData ? (
+                <Line data={getDynamicUSData()} options={chartOptions} height={200} />
+              ) : (
+                <Typography variant="body1">Loading data...</Typography>
+              )}
               <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 2 }}>
-                <Button variant="outlined">Week</Button>
-                <Button variant="outlined">Month</Button>
-                <Button variant="outlined">Quarter</Button>
-                <Button variant="outlined">Year</Button>
+                <Button variant="outlined" onClick={() => setSelectedUSData('Total CO2 Emissions')}>Total CO2 Emissions</Button>
+                <Button variant="outlined" onClick={() => setSelectedUSData('Energy CO2 Emissions')}>Energy CO2 Emissions</Button>
+                <Button variant="outlined" onClick={() => setSelectedUSData('Transporation CO2 Emissions')}>Transporation CO2 Emissions</Button>
               </Box>
             </Box>
           </Grid>
