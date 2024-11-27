@@ -103,7 +103,7 @@ const LogActivity = () => {
           <FormLabel>        <Typography variant='h5' sx={{mt:2}} >
           time of day
           </Typography> </FormLabel>
-        <RadioGroup row value={timeofDay} onChange={handleTimeofDayChange}>
+        <RadioGroup>
           <FormControlLabel value="morning" control={<Radio/>} label={
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <WbSunnyIcon sx={{ marginRight: 1 }} />
@@ -191,8 +191,6 @@ const LogActivity = () => {
           onClick={logActivity}
           fullWidth
           sx={{ mt: 2 }}
-          disabled={isButtonDisabled} 
-
         >
           Log Activity
         </Button>

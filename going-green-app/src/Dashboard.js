@@ -37,7 +37,7 @@ const Dashboard = () => {
   // US Chart states
   const [selectedUSData, setSelectedUSData] = useState('Total CO2 Emissions')
   const [cachedData, setCachedData] = useState({});
-  const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState();
   // User chart states
   const [yourTrendsPeriod, setYourTrendsPeriod] = useState('Week');
   const [measurement, setMeasurement] = useState('CO2 Emissions');
@@ -95,21 +95,23 @@ const Dashboard = () => {
       case "Transporation CO2 Emissions":
         response = await axios.get("http://localhost:3000/us-transporation-data");
         break;
-    }
+        }
     const responseData = response.data;
+    const cD = getDynamicUSData(responseData);
 
-    setCachedData((prev) => ({ ...prev, [selectedUSData]: responseData }));
-    setChartData(responseData);
-    console.log("chart data", chartData);
+    setCachedData((prev) => ({ ...prev, [selectedUSData]: cD }));
+    setChartData(cD);
   }
-  catch(error){}
+  catch(error){console.log("failed to get us data", error)}
   }; fetchUSData();}, [selectedUSData]); 
 
-  const getDynamicUSData = () => {
-    if (!chartData || chartData.length === 0) return { worldTrendsData };
-
-    const labels = chartData.map((item) => item.STATE);
-    const emissions = chartData.map((item) => item.EMISSIONS_PER_CAPITA);
+  const getDynamicUSData = (resData) => {
+    if (!Array.isArray(resData) || resData.length === 0) {
+      console.log("invalid data format");
+      return { labels: [], datasets: [] }; 
+    }
+    const labels = resData.map((item) => item[0]);
+    const emissions = resData.map((item) => item[1]);
     const label = selectedUSData;
 
     return {
@@ -224,10 +226,6 @@ const Dashboard = () => {
   const getYourTrendsData = () => {
     return getDynamicYourTrendsData();
   };
-
-  const getUSData = () => {
-    getDynamicUSData();
-  }
   return (
     <div
       style={{
@@ -258,7 +256,7 @@ const Dashboard = () => {
               </Typography>
               {/* <Line data={getUSData()} options={chartOptions} height={200} /> */}
               {chartData ? (
-                <Line data={getDynamicUSData()} options={chartOptions} height={200} />
+                <Line data={chartData} options={chartOptions} height={200} />
               ) : (
                 <Typography variant="body1">Loading data...</Typography>
               )}
