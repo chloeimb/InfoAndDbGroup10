@@ -194,6 +194,63 @@ app.get('/user-activities', async (req, res) => {
   }
 });
 
+
+// Route to fetch US Total CO2 Emissions 
+app.get('/us-co2-data', async (req, res) => {
+  try {
+    const query = `SELECT e.STATE_FULL_NAME AS STATE, (SUM(e.CO2_EMISSIONS_TONS) + SUM(n.EMISSIONS)) / sp.POPULATION AS EMISSIONS_PER_CAPITA
+    FROM EGRID_DATA e
+    JOIN VALERIE78.NEI_STATES n
+    ON e.STATE_FULL_NAME = n.STATE
+    JOIN STATE_POPULATION sp
+    ON e.STATE_FULL_NAME = sp.STATE
+    WHERE e.YEAR = 2021
+    GROUP BY e.STATE_FULL_NAME, sp.POPULATION
+    ORDER BY e.STATE_FULL_NAME`
+    const result = await db.executeQuery(query);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching us total data:', error);
+    if (!res.headersSent) {
+      res.status(500).json({ message: 'Error fetching us total data' });
+  }  }
+});
+
+// Route to fetch US Energy CO2 Emissions 
+app.get('/us-energy-data', async (req, res) => {
+  try {
+    const query = `SELECT e.STATE_FULL_NAME AS STATE, SUM(e.CO2_EMISSIONS_TONS) / sp.POPULATION AS EMISSIONS_PER_CAPITA
+    FROM EGRID_DATA e
+    JOIN STATE_POPULATION sp
+    ON e.STATE_FULL_NAME = sp.STATE
+    WHERE e.YEAR = 2022
+    GROUP BY e.STATE_FULL_NAME, sp.POPULATION
+    ORDER BY e.STATE_FULL_NAME`
+    const result = await db.executeQuery(query);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching us energy data:', error);
+    res.status(500).json({ message: 'Error fetching us energy data' });
+  }
+});
+
+// Route to fetch US transporation CO2 Emissions 
+app.get('/us-transporation-data', async (req, res) => {
+  try {
+    const query = `SELECT n.STATE AS STATE, SUM(n.EMISSIONS) / sp.POPULATION AS EMISSIONS_PER_CAPITA
+    FROM VALERIE78.NEI_STATES n
+    JOIN STATE_POPULATION sp
+    ON n.STATE = sp.STATE
+    GROUP BY n.STATE, sp.POPULATION
+    ORDER BY n.STATE`
+    const result = await db.executeQuery(query);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching us transporation data:', error);
+    res.status(500).json({ message: 'Error fetching us transporation data' });
+  }
+});
+
 // Start the server
 app.listen(port, async () => {
   console.log(`Server running on http://localhost:${port}`);

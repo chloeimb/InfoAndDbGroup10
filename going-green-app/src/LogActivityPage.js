@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { Container, Typography, MenuItem, TextField, Button } from '@mui/material';
+import { Container, Typography, MenuItem, TextField, Button, RadioGroup, Radio, FormControl, FormControlLabel, FormLabel } from '@mui/material';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import HouseIcon from '@mui/icons-material/House';
+import NightsStayIcon from '@mui/icons-material/NightsStay';
 import BottomNav from './BottomNav'; // Import the ribbon
 import './BottomNav.css'; // Import the custom CSS for styling
 import backgroundImage from './images/logactivityimage.png'; // Adjust this path
@@ -10,9 +13,11 @@ const LogActivity = () => {
   const [hours, setHours] = useState('');
   const [activities, setActivities] = useState([]);
 
+  // adding time of day
   const handleActivityChange = (event) => {
     setActivityType(event.target.value);
   };
+
 
   const handleGallonsChange = (event) => {
     setGallons(event.target.value);
@@ -83,11 +88,39 @@ const LogActivity = () => {
         alignItems: 'center', // Center content horizontally
       }}
     >
-      <Container sx={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', padding: 4, borderRadius: 2, boxShadow: 3, mt: 4 }}>
-        <Typography variant="h4" gutterBottom>
+      <Container align="center"sx={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', padding: 4, borderRadius: 2, boxShadow: 3, mt: 4 }}>
+        <Typography variant="h4" gutterBottom align="center">
           Log Activity
         </Typography>
 
+        {/*time of day selection*/}
+        <FormControl >
+          <FormLabel>        <Typography variant='h5' sx={{mt:2}} >
+          time of day
+          </Typography> </FormLabel>
+        <RadioGroup>
+          <FormControlLabel value="morning" control={<Radio/>} label={
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <WbSunnyIcon sx={{ marginRight: 1 }} />
+                Morning
+              </div>
+            }/>
+            
+          <FormControlLabel value="afternoon" control={<Radio/>} label={
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <HouseIcon sx={{ marginRight: 1 }} />
+                Afternoon
+              </div>
+            }/>
+          <FormControlLabel value="evening" control={<Radio/>} label={
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <NightsStayIcon sx={{ marginRight: 1 }} />
+                Night
+              </div>
+            }/>
+            
+        </RadioGroup>
+        </FormControl>
         <TextField
           select
           label="Activity Type"
@@ -96,6 +129,7 @@ const LogActivity = () => {
           fullWidth
           margin="normal"
         >
+
           <MenuItem value="driving">Driving Gas Car</MenuItem>
           <MenuItem value="electricity">Electricity Used</MenuItem>
         </TextField>
@@ -121,7 +155,6 @@ const LogActivity = () => {
             margin="normal"
           />
         )}
-
         <Button
           variant="contained"
           color="primary"
@@ -135,6 +168,7 @@ const LogActivity = () => {
         <Typography variant="h6" sx={{ mt: 4 }}>
           Logged Activities
         </Typography>
+
         <ul>
           {activities.map((activity, index) => (
             <li key={index}>
@@ -169,7 +203,7 @@ const calculateCO2Emission = (activityType, gallons, hours) => {
 
   // 8,887 grams of CO2/gallon of gasoline = 8.887 × 10-3 metric tons CO2/gallon of gasoline
   if (activityType === 'driving') {
-    co2Emission = 8887 * gallons; 
+ co2Emission = 8887 * gallons; 
     //852.3 lbs CO2/MWh × 1 metric ton/2,204.6 lbs × 1/(1-0.073) MWh delivered/MWh generated × 1 MWh/1,000 kWh = 4.17 × 10-4 metric tons CO2/kWh
   } else if (activityType === 'electricity') {
     co2Emission = (0.000417 * hours) * 453.592; // times 453.592 to do lb to gram conversion
