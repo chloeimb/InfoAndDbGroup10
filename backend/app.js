@@ -1,3 +1,5 @@
+// app.js
+
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -11,43 +13,100 @@ const SECRET_KEY = 'your_secret_key'; // Replace with a secure value from an env
 app.use(cors()); // Allow cross-origin requests
 app.use(express.json()); // Parse incoming requests with JSON payloads
 
-// Route to fetch all users (for displaying data)
-app.get('/', async (req, res) => {
+// Middleware to authenticate and authorize admin users
+const authenticateAdmin = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err || !user.isAdmin) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+// Route to fetch all users (Admin only)
+app.get('/users', authenticateAdmin, async (req, res) => {
   try {
-    const result = await db.executeQuery('SELECT USER_ID, EMAIL FROM users');
-    res.json(result.rows); // Send the result to the frontend
+    const result = await db.executeQuery('SELECT USER_ID, EMAIL, IS_ADMIN FROM users');
+    res.json(result.rows);
   } catch (error) {
     console.error('Error fetching users:', error);
     res.status(500).json({ message: 'Error fetching users' });
   }
 });
 
+// app.js
+
+// Route to delete a user (Admin only)
+app.delete('/users/:id', authenticateAdmin, async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    await db.executeQuery('DELETE FROM users WHERE USER_ID = :userId', [userId]);
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Error deleting user' });
+  }
+});
+
+// app.js
+
+// Route to update a user's isAdmin status (Admin only)
+app.put('/users/:id/admin-status', authenticateAdmin, async (req, res) => {
+  const userId = req.params.id;
+  const { isAdmin } = req.body;
+
+  try {
+    await db.executeQuery('UPDATE users SET IS_ADMIN = :isAdmin WHERE USER_ID = :userId', [isAdmin ? 1 : 0, userId]);
+    res.json({ message: 'User admin status updated successfully' });
+  } catch (error) {
+    console.error('Error updating user admin status:', error);
+    res.status(500).json({ message: 'Error updating user admin status' });
+  }
+});
+
+// app.js
+
+// Route to update a user's email (Admin only)
+app.put('/users/:id/email', authenticateAdmin, async (req, res) => {
+  const userId = req.params.id;
+  const { email } = req.body;
+
+  try {
+    await db.executeQuery('UPDATE users SET EMAIL = :email WHERE USER_ID = :userId', [email, userId]);
+    res.json({ message: 'User email updated successfully' });
+  } catch (error) {
+    console.error('Error updating user email:', error);
+    res.status(500).json({ message: 'Error updating user email' });
+  }
+});
+
+
+
+
 // Route to handle user sign-up
 app.post('/signup', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, isAdmin } = req.body;
 
   try {
     // Check if user already exists
-    console.log('Checking if the email exists:', email);
     const userExists = await db.executeQuery('SELECT * FROM users WHERE EMAIL = :email', [email]);
 
     if (userExists.rows.length > 0) {
-      console.log('User with this email already exists');
       return res.status(400).json({ message: 'User already exists' });
     }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log('Password hashed:', hashedPassword); // Log the hashed password
 
     // Insert the new user into the database
-    console.log('Inserting user with email:', email);
     const insertResult = await db.executeQuery(
-      'INSERT INTO users (USER_ID, EMAIL, PASSWORD_HASH) VALUES (USER_SEQ.NEXTVAL, :email, :password)',
-      [email, hashedPassword]
+      'INSERT INTO users (USER_ID, EMAIL, PASSWORD_HASH, IS_ADMIN) VALUES (USER_SEQ.NEXTVAL, :email, :password, :isAdmin)',
+      [email, hashedPassword, isAdmin ? 1 : 0]
     );
 
-    console.log('User inserted:', insertResult);
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     console.error('Error during sign-up:', error);
@@ -55,54 +114,48 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+// Route to handle user sign-in
+// app.js
 
 app.post('/signin', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Log the email being searched for
-    console.log('Searching for user with email:', email);
-
     // Fetch the user from the database by email
-    const result = await db.executeQuery('SELECT * FROM users WHERE EMAIL = :email', [email]);
-
-    // Log the result of the query
-    console.log('Result from DB:', result.rows);
+    const result = await db.executeQuery(
+      'SELECT USER_ID, EMAIL, PASSWORD_HASH, IS_ADMIN FROM users WHERE EMAIL = :email',
+      [email]
+    );
 
     // If no user found, return an error
     if (result.rows.length === 0) {
-      console.log('No user found with this email');
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
     const user = result.rows[0]; // The first row
-    console.log('User object:', user); // Log the user object
 
-    // Assuming the columns are ordered as USER_ID, EMAIL, PASSWORD_HASH
-    const dbPasswordHash = user[2]; // Third column is the PASSWORD_HASH
-    const dbEmail = user[1]; // Second column is the EMAIL
-
-    // Log the password from the database and the one provided by the user
-    console.log('DB Password Hash:', dbPasswordHash);
-    console.log('Entered Password:', password);
+    // Extract values
+    const userId = user[0];
+    const dbEmail = user[1];
+    const dbPasswordHash = user[2];
+    const isAdmin = user[3]; // IS_ADMIN column
 
     // Compare the entered password with the hashed password in the database
     const isValidPassword = await bcrypt.compare(password, dbPasswordHash);
     if (!isValidPassword) {
-      console.log('Password comparison failed');
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
     // If valid, create a JWT token
-    const token = jwt.sign({ id: user[0], email: dbEmail }, SECRET_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({ id: userId, email: dbEmail, isAdmin }, SECRET_KEY, { expiresIn: '1h' });
 
-    console.log('Sign-in successful');
-    res.json({ message: 'Sign-in successful', token });
+    res.json({ message: 'Sign-in successful', token, isAdmin, userId });
   } catch (error) {
     console.error('Error during sign-in:', error);
     res.status(500).json({ message: 'Error during sign-in', error });
   }
 });
+
 
 // Route to log user activities
 app.post('/log-activity', async (req, res) => {
@@ -128,8 +181,11 @@ app.get('/user-activities', async (req, res) => {
 
   try {
     // Fetch activities for the specific user
-    const result = await db.executeQuery('SELECT ACTIVITY_TYPE, DISTANCE, TIME, CO2_EMISSION FROM USER_ACTIVITIES WHERE USER_ID = :userId', [userId]);
-    
+    const result = await db.executeQuery(
+      'SELECT ACTIVITY_TYPE, DISTANCE, TIME, CO2_EMISSION, ACTIVITY_DATE FROM USER_ACTIVITIES WHERE USER_ID = :userId',
+      [userId]
+    );
+
     // Send the activities to the frontend
     res.json(result.rows);
   } catch (error) {
@@ -137,6 +193,7 @@ app.get('/user-activities', async (req, res) => {
     res.status(500).json({ message: 'Error fetching user activities' });
   }
 });
+
 
 // Route to fetch US Total CO2 Emissions 
 app.get('/us-co2-data', async (req, res) => {
@@ -193,6 +250,7 @@ app.get('/us-transporation-data', async (req, res) => {
     res.status(500).json({ message: 'Error fetching us transporation data' });
   }
 });
+
 // Start the server
 app.listen(port, async () => {
   console.log(`Server running on http://localhost:${port}`);
